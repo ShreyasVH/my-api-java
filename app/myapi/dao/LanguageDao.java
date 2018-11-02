@@ -17,7 +17,7 @@ public class LanguageDao extends BaseDao
     @Inject
     public LanguageDao()
     {
-
+        super();
     }
 
     public List<Language> getAllLanguages()

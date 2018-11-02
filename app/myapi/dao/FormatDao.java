@@ -14,7 +14,7 @@ public class FormatDao extends BaseDao
     @Inject
     public FormatDao()
     {
-
+        super();
     }
 
     public List<MovieFormat> getAllFormats()

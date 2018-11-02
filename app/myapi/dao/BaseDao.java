@@ -20,37 +20,40 @@ import java.util.Set;
  */
 public class BaseDao
 {
-    protected final EbeanServer db;
+    protected static EbeanServer db;
 
     @Inject
     public BaseDao()
     {
-        String ip = System.getenv("MYSQL_IP");
-        String userName = System.getenv("MYSQL_USER");
-        String password = System.getenv("MYSQL_PASSWORD");
-
-        ServerConfig config = new ServerConfig();
-        config.setName("default");
-
-        DataSourceConfig dataSourceConfig = new DataSourceConfig();
-        dataSourceConfig.setDriver("com.mysql.jdbc.Driver");
-        dataSourceConfig.setUrl("jdbc:mysql://" + ip + "/maindb");
-        dataSourceConfig.setUsername(userName);
-        dataSourceConfig.setPassword(password);
-
-        config.setDataSourceConfig(dataSourceConfig);
-
-        config.setDefaultServer(true);
-        config.setRegister(true);
-
-        Reflections reflections = new Reflections("myapi.models");
-        Set<Class<? extends Object>> allClasses = reflections.getTypesAnnotatedWith(Entity.class);
-
-        for(Class modelClass : allClasses)
+        if(null == db)
         {
-            config.addClass(modelClass);
-        }
+            String ip = System.getenv("MYSQL_IP");
+            String userName = System.getenv("MYSQL_USER");
+            String password = System.getenv("MYSQL_PASSWORD");
 
-        db = EbeanServerFactory.create(config);
+            ServerConfig config = new ServerConfig();
+            config.setName("default");
+
+            DataSourceConfig dataSourceConfig = new DataSourceConfig();
+            dataSourceConfig.setDriver("com.mysql.jdbc.Driver");
+            dataSourceConfig.setUrl("jdbc:mysql://" + ip + "/maindb");
+            dataSourceConfig.setUsername(userName);
+            dataSourceConfig.setPassword(password);
+
+            config.setDataSourceConfig(dataSourceConfig);
+
+            config.setDefaultServer(true);
+            config.setRegister(true);
+
+            Reflections reflections = new Reflections("myapi.models");
+            Set<Class<? extends Object>> allClasses = reflections.getTypesAnnotatedWith(Entity.class);
+
+            for(Class modelClass : allClasses)
+            {
+                config.addClass(modelClass);
+            }
+
+            db = EbeanServerFactory.create(config);
+        }
     }
 }

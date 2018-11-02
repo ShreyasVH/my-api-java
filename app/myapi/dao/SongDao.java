@@ -2,6 +2,7 @@ package myapi.dao;
 
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
+import com.google.inject.Inject;
 import myapi.models.Song;
 import play.Logger;
 
@@ -14,6 +15,12 @@ import java.util.List;
 public class SongDao extends BaseDao
 {
     private final Logger.ALogger LOGGER = Logger.of(SongDao.class);
+
+    @Inject
+    public SongDao()
+    {
+        super();
+    }
 
     public List<SqlRow> dashboard()
     {

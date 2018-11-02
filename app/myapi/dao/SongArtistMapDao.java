@@ -1,5 +1,6 @@
 package myapi.dao;
 
+import com.google.inject.Inject;
 import myapi.models.SongComposerMap;
 import myapi.models.SongLyricistMap;
 import myapi.models.SongSingerMap;
@@ -15,6 +16,12 @@ import java.util.List;
 public class SongArtistMapDao extends BaseDao
 {
     private static final Logger.ALogger LOGGER = Logger.of(SongArtistMapDao.class);
+
+    @Inject
+    public SongArtistMapDao()
+    {
+        super();
+    }
 
     public List<SongSingerMap> getSingerMapsForSong(String songId)
     {
