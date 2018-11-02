@@ -1,0 +1,101 @@
+<configuration>
+    <appender
+        name="PlayFrameworkFileAppender"
+        class="ch.qos.logback.core.rolling.RollingFileAppender"
+    >
+        <File>
+            logs/play/play.log
+        </File>
+        <Append>
+            true
+        </Append>
+        <encoder>
+            <pattern>
+                [%d{dd MMM yy HH:mm:ss}] %c %-5p %X{rid} - %m%n
+            </pattern>
+        </encoder>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"
+        >
+            <fileNamePattern>
+                logs/play/play.%d{yyyy-MM-dd-HH}.log
+            </fileNamePattern>
+            <maxHistory>
+                7
+            </maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender
+        name="ApplicationFileAppender"
+        class="ch.qos.logback.core.rolling.RollingFileAppender"
+    >
+        <File>
+            logs/application.log
+        </File>
+        <Append>
+            true
+        </Append>
+        <encoder>
+            <pattern>
+                [%d{dd MMM yy HH:mm:ss}] [%thread] %c %-5p %X{rid} - %m%n
+            </pattern>
+        </encoder>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"
+        >
+            <fileNamePattern>
+                logs/application.%d{yyyy-MM-dd-HH}.log
+            </fileNamePattern>
+            <maxHistory>
+                7
+            </maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender
+        name="ConsoleAppender"
+        class="ch.qos.logback.core.ConsoleAppender"
+    >
+        <encoder>
+            <pattern>
+                [%d{dd MMM yy HH:mm:ss}] %c %-5p %X{rid} - %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger
+        name="play"
+        level="INFO"
+        additivity="false"
+    >
+        <appender-ref ref="PlayFrameworkFileAppender" />
+    </logger>
+    <logger
+        name="com.jolbox.bonecp"
+        level="WARN"
+        additivity="false"
+    >
+        <appender-ref ref="PlayFrameworkFileAppender" />
+    </logger>
+    <logger
+        name="application"
+        level="DEBUG"
+        additivity="false"
+    >
+        <appender-ref ref="ApplicationFileAppender" />
+    </logger>
+
+    <logger
+        name="myapi"
+        level="DEBUG"
+        additivity="false"
+    >
+        <appender-ref ref="ApplicationFileAppender" />
+    </logger>
+
+    <root level="ERROR">
+        <appender-ref ref="ApplicationFileAppender" />
+        <appender-ref ref="ConsoleAppender"/>
+    </root>
+</configuration>

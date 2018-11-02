@@ -1,0 +1,168 @@
+{
+    "settings": {
+        "analysis": {
+            "analyzer": {
+                "my_analyzer" : {
+                    "tokenizer" : "my_tokenizer",
+                    "filter" : [
+                        "lowercase"
+                    ]
+                },
+                "my_search_analyzer" : {
+                    "tokenizer" : "lowercase"
+                }
+            },
+            "tokenizer": {
+                "my_tokenizer" : {
+                    "type" : "ngram",
+                    "token_chars" : [
+                        "letter",
+                        "digit"
+                    ],
+                    "min_gram" : 2,
+                    "max_gram" : 10
+                }
+            }
+        }
+    },
+    "mappings": {
+        "movie": {
+            "properties": {
+                "id": {
+                    "type": "long",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "long"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "text",
+                    "analyzer" : "my_analyzer",
+                    "search_analyzer" : "my_search_analyzer",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "keyword"
+                        }
+                    }
+                },
+                "language": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "long",
+                            "fields" : {
+                                "sort" : {
+                                    "type" : "long"
+                                }
+                            }
+                        },
+                        "name": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "size": {
+                    "type": "long",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "long"
+                        }
+                    }
+                },
+                "format": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "long",
+                            "fields" : {
+                                "sort" : {
+                                    "type" : "long"
+                                }
+                            }
+                        },
+                        "name": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "quality": {
+                    "type": "keyword",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "keyword"
+                        }
+                    }
+                },
+                "year": {
+                    "type": "long",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "long"
+                        }
+                    }
+                },
+                "subtitles": {
+                    "type": "boolean",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "boolean"
+                        }
+                    }
+                },
+                "seen_in_theatre": {
+                    "type": "boolean",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "boolean"
+                        }
+                    }
+                },
+                "basename": {
+                    "type": "keyword",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "keyword"
+                        }
+                    }
+                },
+                "actors": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "gender": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "directors": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "gender": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "status": {
+                    "type": "keyword",
+                    "fields" : {
+                        "sort" : {
+                            "type" : "keyword"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
