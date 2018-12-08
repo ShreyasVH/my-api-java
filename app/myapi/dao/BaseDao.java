@@ -27,33 +27,7 @@ public class BaseDao
     {
         if(null == db)
         {
-            String ip = System.getenv("MYSQL_IP");
-            String userName = System.getenv("MYSQL_USER");
-            String password = System.getenv("MYSQL_PASSWORD");
-
-            ServerConfig config = new ServerConfig();
-            config.setName("default");
-
-            DataSourceConfig dataSourceConfig = new DataSourceConfig();
-            dataSourceConfig.setDriver("com.mysql.jdbc.Driver");
-            dataSourceConfig.setUrl("jdbc:mysql://" + ip + "/maindb");
-            dataSourceConfig.setUsername(userName);
-            dataSourceConfig.setPassword(password);
-
-            config.setDataSourceConfig(dataSourceConfig);
-
-            config.setDefaultServer(true);
-            config.setRegister(true);
-
-            Reflections reflections = new Reflections("myapi.models");
-            Set<Class<? extends Object>> allClasses = reflections.getTypesAnnotatedWith(Entity.class);
-
-            for(Class modelClass : allClasses)
-            {
-                config.addClass(modelClass);
-            }
-
-            db = EbeanServerFactory.create(config);
+            db = Ebean.getServer("default");
         }
     }
 }

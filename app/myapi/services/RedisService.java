@@ -1,11 +1,11 @@
 package myapi.services;
 
-import myapi.constants.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+
 import myapi.utils.Utils;
 
 /**

@@ -6,9 +6,8 @@ import play.Play;
 /**
  * Created by shreyas.hande on 12/6/17.
  */
-public class Constants {
-    protected static final Configuration _CONFIGURATION = Play.application().configuration();
-
+public class Constants
+{
     public static final Integer DEFAULT_ELASTIC_OFFSET = 0;
 
     public static final Integer DEFAULT_ELASTIC_COUNT = 2000;
