@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Created by shreyas.hande on 12/11/17.
  */
-public class ArtistsController extends Controller
+public class ArtistsController extends BaseController
 {
     private final ArtistService artistService;
 

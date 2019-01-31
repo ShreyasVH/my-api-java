@@ -1,5 +1,7 @@
 #GET     /
 
+OPTIONS /*all                                           @myapi.controllers.BaseController.preflight(all)
+
 GET     /movies/languages                               @myapi.controllers.MoviesController.getAllLanguages()
 GET     /movies/language/id/:id                         @myapi.controllers.MoviesController.getLanguageById(id : Long)
 GET     /movies/language/name/:name                     @myapi.controllers.MoviesController.getLanguageByName(name : String)

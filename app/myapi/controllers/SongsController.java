@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Created by shreyas.hande on 1/7/18.
  */
-public class SongsController extends Controller
+public class SongsController extends BaseController
 {
     private final SongService songService;
 

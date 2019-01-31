@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Created by shreyas.hande on 7/22/17.
  */
-public class MoviesController extends Controller
+public class MoviesController extends BaseController
 {
     private static final Logger.ALogger LOGGER = Logger.of(MoviesController.class);
 
