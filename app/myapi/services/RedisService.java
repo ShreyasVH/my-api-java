@@ -23,7 +23,7 @@ public class RedisService
 
     public RedisService()
     {
-        JedisPool pool = new JedisPool(System.getenv("REDIS_IP"), Integer.parseInt(System.getenv("REDIS_PORT")));
+        JedisPool pool = new JedisPool(System.getenv("REDIS_URI"));
         setIsConnected(true);
         try
         {
