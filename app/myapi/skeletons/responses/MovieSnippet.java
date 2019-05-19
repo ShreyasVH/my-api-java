@@ -13,61 +13,39 @@ import java.util.List;
  */
 //@AllArgsConstructor
 //@JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
 public class MovieSnippet
 {
 
     @Id
-    @Getter
-    @Setter
     public Long id;
 
-    @Getter
-    @Setter
     public String name;
 
-    @Getter
-    @Setter
     public Language language;
 
-    @Getter
-    @Setter
     public Long size;
 
-    @Getter
-    @Setter
     public MovieFormat format;
 
-    @Getter
-    @Setter
     public String quality;
 
-    @Getter
-    @Setter
     public Integer year;
 
-    @Getter
-    @Setter
     public Boolean subtitles;
 
-    @Getter
-    @Setter
     public Boolean seen_in_theatre;
 
-    @Getter
-    @Setter
     public String basename;
 
-    @Getter
-    @Setter
     public List<Artist> actors;
 
-    @Getter
-    @Setter
     public List<Artist> directors;
 
-    @Getter
-    @Setter
     public Status status;
+
+    private String imageUrl;
 
     public MovieSnippet(Movie movie)
     {
@@ -80,6 +58,7 @@ public class MovieSnippet
         this.seen_in_theatre = movie.getSeenInTheatre();
         this.basename = movie.getBasename();
         this.status = movie.getStatus();
+        this.imageUrl = movie.getImageUrl();
     }
 
     @JsonCreator

@@ -113,6 +113,17 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    public Movie getMovieFromDB(Long id) throws MyException
+    {
+        Movie movie = movieDao.getMovieById(id);
+        if(null == movie)
+        {
+            throw new NotFoundException(ValidationResponse.MOVIE_NOT_FOUND);
+        }
+        return movie;
+    }
+
+    @Override
     public Boolean updateMovieStatus(Long id, Status status) throws MyException
     {
         Movie movie = movieDao.getMovieById(id);
@@ -157,10 +168,18 @@ public class MovieServiceImpl implements MovieService {
         Boolean isSuccess = movieDao.saveMovie(movie);
         if(isSuccess)
         {
-            movieArtistMapDao.removeActorsFromMovie(movie.getId());
-            movieArtistMapDao.saveActorsForMovie(movie.getId(), request.getActorIds());
-            movieArtistMapDao.removeDirectorsFromMovie(movie.getId());
-            movieArtistMapDao.saveDirectorsForMovie(movie.getId(), request.getDirectorIds());
+            if(!request.getActorIds().isEmpty())
+            {
+                movieArtistMapDao.removeActorsFromMovie(movie.getId());
+                movieArtistMapDao.saveActorsForMovie(movie.getId(), request.getActorIds());
+            }
+
+            if(!request.getDirectorIds().isEmpty())
+            {
+                movieArtistMapDao.removeDirectorsFromMovie(movie.getId());
+                movieArtistMapDao.saveDirectorsForMovie(movie.getId(), request.getDirectorIds());
+            }
+
             movieSnippet = movieSnippet(movie);
             movieIndexService.indexMovieAsThread(movieSnippet, true);
         }
@@ -218,6 +237,11 @@ public class MovieServiceImpl implements MovieService {
         if(null != request.getBasename())
         {
             movie.setBasename(request.getBasename());
+        }
+
+        if(null != request.getImageUrl())
+        {
+            movie.setImageUrl(request.getImageUrl());
         }
 
         return movie;
@@ -304,5 +328,24 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieSnippet> getMoviesByKeyword(String keyword)
     {
         return movieIndexService.getMoviesByKeyword(keyword);
+    }
+
+    @Override
+    public GenericResponse indexMovie(Long id) throws MyException {
+        Boolean isSuccess = movieIndexService.indexMovie(id);
+        GenericResponse response = new GenericResponse();
+        if(isSuccess)
+        {
+            response.setType(ResponseType.SUCCESS);
+            response.setDescription(SuccessResponse.UPDATE_SUCCESS.getDescription());
+            response.setCode(SuccessResponse.UPDATE_SUCCESS.getCode());
+        }
+        else
+        {
+            response.setType(ResponseType.ERROR);
+            response.setCode(ErrorResponse.API_FAILED.getCode());
+            response.setDescription(ErrorResponse.API_FAILED.getDescription());
+        }
+        return response;
     }
 }

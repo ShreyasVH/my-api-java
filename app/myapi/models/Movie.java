@@ -18,64 +18,47 @@ import javax.persistence.Table;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "movies")
 public class Movie extends Model
 {
     @Id
     @Column(name = "id")
-    @Getter
-    @Setter
     public Long id;
 
     @Column(name = "name")
-    @Getter
-    @Setter
     public String name;
 
     @Column(name = "language_id")
-    @Getter
-    @Setter
     public Long languageId;
 
     @Column(name = "size")
-    @Getter
-    @Setter
     public Long size;
 
     @Column(name = "format_id")
-    @Getter
-    @Setter
     public Long formatId;
 
     @Column(name = "quality")
-    @Getter
-    @Setter
     public String quality;
 
     @Column(name = "year")
-    @Getter
-    @Setter
     public Integer year;
 
     @Column(name = "subtitles")
-    @Getter
-    @Setter
     public Boolean subtitles;
 
     @Column(name = "seen_in_theatre")
-    @Getter
-    @Setter
     public Boolean seenInTheatre;
 
     @Column(name = "basename")
-    @Getter
-    @Setter
     public String basename;
 
     @Column(name = "status")
-    @Getter
-    @Setter
     public Status status = Status.ENABLED;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     public Movie(SqlRow movie)
     {
@@ -90,5 +73,6 @@ public class Movie extends Model
         this.seenInTheatre = movie.getBoolean("seen_in_theatre");
         this.basename = movie.getString("basename");
         this.status = Status.getStatus(movie.getInteger("status"));
+        this.imageUrl = movie.getString("image_url");
     }
 }

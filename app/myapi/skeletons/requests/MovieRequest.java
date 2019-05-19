@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,9 @@ public class MovieRequest extends Request {
 
     private String basename;
 
-    private List<String> actorIds;
+    private List<String> actorIds = new ArrayList<>();
 
-    private List<String> directorIds;
+    private List<String> directorIds = new ArrayList<>();
+
+    private String imageUrl;
 }

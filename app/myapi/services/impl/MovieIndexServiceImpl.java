@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import myapi.constants.Constants;
 import myapi.exceptions.MyException;
 import myapi.exceptions.NotFoundException;
+import myapi.models.Movie;
 import myapi.models.MovieAttribute;
 import myapi.models.Status;
 import myapi.models.ValidationResponse;
@@ -196,6 +197,14 @@ public class MovieIndexServiceImpl implements MovieIndexService {
             counter++;
         }
         return isCompleteSuccess;
+    }
+
+    @Override
+    public Boolean indexMovie(Long id) throws MyException
+    {
+        Movie movie = movieService.getMovieFromDB(id);
+        MovieSnippet movieSnippet = movieService.movieSnippet(movie);
+        return indexMovie(movieSnippet);
     }
 
     @Override
