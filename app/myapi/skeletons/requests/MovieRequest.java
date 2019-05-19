@@ -40,4 +40,6 @@ public class MovieRequest extends Request {
     private List<String> actorIds;
 
     private List<String> directorIds;
+
+    private String imageUrl;
 }

@@ -231,6 +231,11 @@ public class MovieServiceImpl implements MovieService {
             movie.setBasename(request.getBasename());
         }
 
+        if(null != request.getImageUrl())
+        {
+            movie.setImageUrl(request.getImageUrl());
+        }
+
         return movie;
     }
 
