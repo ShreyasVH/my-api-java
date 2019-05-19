@@ -25,6 +25,8 @@ public interface MovieService
 
     MovieSnippet getMovieById(Long id) throws MyException;
 
+    Movie getMovieFromDB(Long id) throws MyException;
+
     Boolean updateMovieStatus(Long id, Status status) throws MyException;
 
     Boolean updateMovieStatus(UpdateStatusRequest request) throws MyException;
@@ -50,4 +52,6 @@ public interface MovieService
     GenericResponse reIndexMoviesFromDB() throws MyException;
 
     List<MovieSnippet> getMoviesByKeyword(String keyword);
+
+    GenericResponse indexMovie(Long id) throws MyException;
 }

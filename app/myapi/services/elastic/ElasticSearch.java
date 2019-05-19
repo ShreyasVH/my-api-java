@@ -118,7 +118,7 @@ public abstract class ElasticSearch
     public Boolean create(String index, String type, String id, String document)
     {
         IndexResponse response = client.prepareIndex(index, type, id).setSource(document, XContentType.JSON).execute().actionGet();
-        return response.status().equals(RestStatus.CREATED);
+        return (RestStatus.CREATED.equals(response.status()) || RestStatus.OK.equals(response.status()));
     }
 
     public Boolean update(String index, String type, String id, String document)

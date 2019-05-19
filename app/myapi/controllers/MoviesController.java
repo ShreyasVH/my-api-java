@@ -266,4 +266,16 @@ public class MoviesController extends BaseController
             }
         });
     }
+
+    public F.Promise<Result> indexMovie(Long id)
+    {
+        return F.Promise.promise(new F.Function0<Result>() {
+            @Override
+            public Result apply() throws Exception
+            {
+                GenericResponse response = movieService.indexMovie(id);
+                return ok(Json.toJson(response));
+            }
+        });
+    }
 }

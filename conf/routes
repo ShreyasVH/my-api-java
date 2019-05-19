@@ -20,6 +20,7 @@ POST    /movies/movie                                   @myapi.controllers.Movie
 PUT     /movies/movie                                   @myapi.controllers.MoviesController.editMovie()
 PUT     /movies/updateStatus                            @myapi.controllers.MoviesController.updateMovieStatus()
 POST    /movies/reIndex                                 @myapi.controllers.MoviesController.reIndexFromDB()
+POST    /movies/index/id/:id                            @myapi.controllers.MoviesController.indexMovie(id : Long)
 GET     /movies/dashboard                               @myapi.controllers.MoviesController.dashboard()
 GET     /movies/movies/keyword/:keyword                 @myapi.controllers.MoviesController.getMoviesByKeyword(keyword : String)
 

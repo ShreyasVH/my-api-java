@@ -20,6 +20,8 @@ public interface MovieIndexService
 
     Boolean reIndexMoviesFromDB() throws MyException;
 
+    Boolean indexMovie(Long id) throws MyException;
+
     Boolean indexMovie(MovieSnippet movieSnippet);
 
     Boolean indexMovie(MovieSnippet movieSnippet, Boolean isUpdateRequired);
