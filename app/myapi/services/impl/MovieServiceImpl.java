@@ -168,10 +168,18 @@ public class MovieServiceImpl implements MovieService {
         Boolean isSuccess = movieDao.saveMovie(movie);
         if(isSuccess)
         {
-            movieArtistMapDao.removeActorsFromMovie(movie.getId());
-            movieArtistMapDao.saveActorsForMovie(movie.getId(), request.getActorIds());
-            movieArtistMapDao.removeDirectorsFromMovie(movie.getId());
-            movieArtistMapDao.saveDirectorsForMovie(movie.getId(), request.getDirectorIds());
+            if(!request.getActorIds().isEmpty())
+            {
+                movieArtistMapDao.removeActorsFromMovie(movie.getId());
+                movieArtistMapDao.saveActorsForMovie(movie.getId(), request.getActorIds());
+            }
+
+            if(!request.getDirectorIds().isEmpty())
+            {
+                movieArtistMapDao.removeDirectorsFromMovie(movie.getId());
+                movieArtistMapDao.saveDirectorsForMovie(movie.getId(), request.getDirectorIds());
+            }
+
             movieSnippet = movieSnippet(movie);
             movieIndexService.indexMovieAsThread(movieSnippet, true);
         }
