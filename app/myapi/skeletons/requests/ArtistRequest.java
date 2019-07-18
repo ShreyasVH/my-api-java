@@ -15,8 +15,10 @@ import myapi.models.ValidationResponse;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
-public class AddArtistRequest extends Request
+public class ArtistRequest extends Request
 {
+    private String id;
+
     private String name;
 
     private String gender;
@@ -31,6 +33,14 @@ public class AddArtistRequest extends Request
         }
 
         if((null == gender) || (gender.equals("")))
+        {
+            throw new BadRequestException(ValidationResponse.INVALID_REQUEST);
+        }
+    }
+
+    public void validateUpdation() throws MyException
+    {
+        if(null == id)
         {
             throw new BadRequestException(ValidationResponse.INVALID_REQUEST);
         }

@@ -2,7 +2,7 @@ package myapi.services;
 
 import myapi.exceptions.MyException;
 import myapi.models.Artist;
-import myapi.skeletons.requests.AddArtistRequest;
+import myapi.skeletons.requests.ArtistRequest;
 
 import java.util.List;
 
@@ -15,7 +15,9 @@ public interface ArtistService
 
     List<Artist> getAllDirectors();
 
-    Artist addArtist(AddArtistRequest addArtistRequest) throws MyException;
+    Artist addArtist(ArtistRequest artistRequest) throws MyException;
+
+    Artist updateArtist(ArtistRequest artistRequest) throws MyException;
 
     Artist getArtistByName(String name) throws MyException;
 
