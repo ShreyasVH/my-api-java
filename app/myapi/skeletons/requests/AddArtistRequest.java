@@ -21,6 +21,8 @@ public class AddArtistRequest extends Request
 
     private String gender;
 
+    private String imageUrl;
+
     public void validate() throws MyException
     {
         if((null == name) || (name.equals("")))

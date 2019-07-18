@@ -64,6 +64,7 @@ public class ArtistServiceImpl implements ArtistService
         artist.setId(Utils.generateUniqueIdByParam("ar"));
         artist.setName(addArtistRequest.getName());
         artist.setGender(addArtistRequest.getGender());
+        artist.setImageUrl(addArtistRequest.getImageUrl());
 
         Boolean isSuccess = artistDao.saveArtist(artist);
         if(!isSuccess)
