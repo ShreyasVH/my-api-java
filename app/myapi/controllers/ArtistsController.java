@@ -6,10 +6,9 @@ import myapi.models.Artist;
 import myapi.models.ValidationResponse;
 import play.libs.F;
 import play.libs.Json;
-import play.mvc.Controller;
 import play.mvc.Result;
 import myapi.services.ArtistService;
-import myapi.skeletons.requests.AddArtistRequest;
+import myapi.skeletons.requests.ArtistRequest;
 import myapi.utils.Utils;
 
 import java.util.HashMap;
@@ -52,19 +51,40 @@ public class ArtistsController extends BaseController
     public F.Promise<Result> addArtist()
     {
         return F.Promise.promise(new F.Function0<Result>() {
-            AddArtistRequest addArtistRequest = null;
+            ArtistRequest artistRequest = null;
             @Override
             public Result apply() throws Exception
             {
                 try
                 {
-                    addArtistRequest = Utils.convertObject(request().body().asJson(), AddArtistRequest.class);
+                    artistRequest = Utils.convertObject(request().body().asJson(), ArtistRequest.class);
                 }
                 catch(Exception ex)
                 {
                     throw new BadRequestException(ValidationResponse.INVALID_REQUEST, ex);
                 }
-                Artist artist = artistService.addArtist(addArtistRequest);
+                Artist artist = artistService.addArtist(artistRequest);
+                return ok(Json.toJson(artist));
+            }
+        });
+    }
+
+    public F.Promise<Result> updateArtist()
+    {
+        return F.Promise.promise(new F.Function0<Result>() {
+            ArtistRequest artistRequest = null;
+            @Override
+            public Result apply() throws Exception
+            {
+                try
+                {
+                    artistRequest = Utils.convertObject(request().body().asJson(), ArtistRequest.class);
+                }
+                catch(Exception ex)
+                {
+                    throw new BadRequestException(ValidationResponse.INVALID_REQUEST, ex);
+                }
+                Artist artist = artistService.updateArtist(artistRequest);
                 return ok(Json.toJson(artist));
             }
         });

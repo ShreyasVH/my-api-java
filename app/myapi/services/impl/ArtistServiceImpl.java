@@ -9,7 +9,7 @@ import myapi.models.Artist;
 import myapi.models.ErrorResponse;
 import myapi.models.ValidationResponse;
 import myapi.services.ArtistService;
-import myapi.skeletons.requests.AddArtistRequest;
+import myapi.skeletons.requests.ArtistRequest;
 import myapi.utils.Utils;
 
 import java.util.List;
@@ -41,14 +41,14 @@ public class ArtistServiceImpl implements ArtistService
     }
 
     @Override
-    public Artist addArtist(AddArtistRequest addArtistRequest) throws MyException
+    public Artist addArtist(ArtistRequest artistRequest) throws MyException
     {
-        addArtistRequest.validate();
+        artistRequest.validate();
 
         Artist existing = null;
         try
         {
-            existing = getArtistByName(addArtistRequest.getName());
+            existing = getArtistByName(artistRequest.getName());
         }
         catch(NotFoundException ex)
         {
@@ -62,8 +62,9 @@ public class ArtistServiceImpl implements ArtistService
 
         Artist artist = new Artist();
         artist.setId(Utils.generateUniqueIdByParam("ar"));
-        artist.setName(addArtistRequest.getName());
-        artist.setGender(addArtistRequest.getGender());
+        artist.setName(artistRequest.getName());
+        artist.setGender(artistRequest.getGender());
+        artist.setImageUrl(artistRequest.getImageUrl());
 
         Boolean isSuccess = artistDao.saveArtist(artist);
         if(!isSuccess)
@@ -71,6 +72,44 @@ public class ArtistServiceImpl implements ArtistService
             throw new BadRequestException(ErrorResponse.API_FAILED);
         }
         return artist;
+    }
+
+    @Override
+    public Artist updateArtist(ArtistRequest artistRequest) throws MyException
+    {
+        artistRequest.validateUpdation();
+
+        Artist existingArtist = getArtistById(artistRequest.getId());
+        boolean isUpdateRequired = false;
+
+
+        if(null != artistRequest.getName())
+        {
+            existingArtist.setName(artistRequest.getName());
+            isUpdateRequired = true;
+        }
+
+        if(null != artistRequest.getGender())
+        {
+            existingArtist.setGender(artistRequest.getGender());
+            isUpdateRequired = true;
+        }
+
+        if(null != artistRequest.getImageUrl())
+        {
+            existingArtist.setImageUrl(artistRequest.getImageUrl());
+            isUpdateRequired = true;
+        }
+
+        if(isUpdateRequired)
+        {
+            boolean isSuccess = artistDao.saveArtist(existingArtist);
+            if(!isSuccess)
+            {
+                throw new BadRequestException(ErrorResponse.API_FAILED);
+            }
+        }
+        return existingArtist;
     }
 
     @Override

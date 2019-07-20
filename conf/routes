@@ -24,10 +24,11 @@ POST    /movies/index/id/:id                            @myapi.controllers.Movie
 GET     /movies/dashboard                               @myapi.controllers.MoviesController.dashboard()
 GET     /movies/movies/keyword/:keyword                 @myapi.controllers.MoviesController.getMoviesByKeyword(keyword : String)
 
+GET     /artists/artist/id/:id                          @myapi.controllers.ArtistsController.getArtistById(id : String)
+POST    /artists/artist                                 @myapi.controllers.ArtistsController.addArtist()
+PUT     /artists/artist                                 @myapi.controllers.ArtistsController.updateArtist()
 GET     /artists/actors                                 @myapi.controllers.ArtistsController.getAllActors()
 GET     /artists/directors                              @myapi.controllers.ArtistsController.getAllDirectors()
-POST    /artists/artist                                 @myapi.controllers.ArtistsController.addArtist()
-GET     /artists/artist/id/:id                          @myapi.controllers.ArtistsController.getArtistById(id : String)
 GET     /artists/artists/keyword/:keyword               @myapi.controllers.ArtistsController.getArtistsByKeyword(keyword : String)
 GET     /artists/singers                                @myapi.controllers.ArtistsController.getAllSingers()
 GET     /artists/composers                              @myapi.controllers.ArtistsController.getAllComposers()
