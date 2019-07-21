@@ -48,6 +48,7 @@ GET     /test/notFound                                  myapi.controllers.TestCo
 GET     /test/notFoundHTML                              myapi.controllers.TestController.notFoundHTML()
 GET     /test/redirect                                  myapi.controllers.TestController.redirectPage()
 GET     /test/temporaryRedirect                         myapi.controllers.TestController.temporaryRedirectPage()
+GET     /test/test                                      myapi.controllers.TestController.test()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                                   controllers.Assets.at(path="/public", file)
