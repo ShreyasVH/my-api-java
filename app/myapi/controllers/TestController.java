@@ -1,6 +1,8 @@
 package myapi.controllers;
 
+import myapi.utils.Logger;
 import play.libs.F;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -32,9 +34,6 @@ public class TestController extends Controller {
 
     public static F.Promise<Result> test()
     {
-        return F.Promise.promise(() -> {
-            System.out.println("Printing in test");
-            return ok("TEST");
-        });
+        return Logger.error("abcde").map(response -> ok(Json.toJson(response)));
     }
 }
