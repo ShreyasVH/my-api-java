@@ -12,7 +12,7 @@ public class Logger
         payload.put("content", content);
         payload.put("source", System.getenv("LOGGER_SOURCE"));
 
-        String url = System.getenv("LOGGER_API_ENDPOINT");
+        String url = System.getenv("LOGGER_API_ENDPOINT") + "logs";
         Api.post(url, payload);
     }
 
