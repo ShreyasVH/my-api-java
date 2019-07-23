@@ -7,7 +7,9 @@ import myapi.models.Language;
 import myapi.models.ValidationResponse;
 import myapi.services.RedisService;
 import myapi.services.LanguageService;
+import myapi.utils.Logger;
 import myapi.utils.Utils;
+import play.libs.Json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,18 +35,26 @@ public class LanguageServiceImpl implements LanguageService
         List<Language> languages = new ArrayList<>();
         if(redisService.getIsConnected())
         {
-            Object languageList = redisService.get("api::languages");
-            if((null == languageList) || !(languageList instanceof List))
+            try
             {
-                languages = languageDao.getAllLanguages();
-                if(!languages.isEmpty())
+                Object languageList = redisService.get("api::languages");
+                if((null == languageList) || !(languageList instanceof List))
                 {
-                    redisService.set("api::languages", languages);
+                    languages = languageDao.getAllLanguages();
+                    if(!languages.isEmpty())
+                    {
+                        redisService.set("api::languages", languages);
+                    }
+                }
+                else
+                {
+                    languages = (List<Language>) languageList;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                languages = (List<Language>) languageList;
+                Logger.error("[getAllLanguages]: Error while fetching languages from cache. Message: " + ex.getMessage() + ". Cause: " + ex.getCause() + ". Trace: " + Json.toJson(ex.getStackTrace()));
+                languages = languageDao.getAllLanguages();
             }
         }
         else

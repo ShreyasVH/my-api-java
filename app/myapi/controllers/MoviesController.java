@@ -15,10 +15,8 @@ import myapi.skeletons.requests.UpdateStatusRequest;
 import myapi.skeletons.responses.FilterResponse;
 import myapi.skeletons.responses.MovieSnippet;
 import myapi.utils.Utils;
-import play.Logger;
 import play.libs.F;
 import play.libs.Json;
-import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.util.HashMap;
@@ -32,8 +30,6 @@ import java.util.Map;
  */
 public class MoviesController extends BaseController
 {
-    private static final Logger.ALogger LOGGER = Logger.of(MoviesController.class);
-
     private final MovieService movieService;
     private final LanguageService languageService;
     private final FormatService formatService;
@@ -53,7 +49,6 @@ public class MoviesController extends BaseController
     public F.Promise<Result> getAllLanguages()
     {
         return F.Promise.promise(() -> {
-            LOGGER.debug("Calling getAllLanguages");
             Map<String, Object> hashMap = new HashMap<>();
             List<Language> languageList = languageService.getAllLanguages();
             hashMap.put("languages", languageList);

@@ -2,9 +2,9 @@ import myapi.binding.ServiceModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import myapi.exceptions.MyException;
+import myapi.utils.Logger;
 import play.Application;
 import play.GlobalSettings;
-import play.Logger;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Action;
@@ -19,8 +19,6 @@ import myapi.skeletons.responses.Response;
 public class Global extends GlobalSettings
 {
     private Injector injector;
-
-    private final Logger.ALogger LOGGER = Logger.of(Global.class);
 
     private class ActionWrapper extends Action.Simple {
         public ActionWrapper(Action<?> action)
@@ -47,6 +45,7 @@ public class Global extends GlobalSettings
     @Override
     public F.Promise<Result> onError(Http.RequestHeader request, Throwable t)
     {
+        Logger.error("[onError]: Error while fetching formats from cache. Message: " + t.getMessage() + ". Cause: " + t.getCause() + ". Trace: " + Json.toJson(t.getStackTrace()));
         Throwable cause = t.getCause();
         Result response = Results.internalServerError(Json.toJson(Response.getErrorResponse(cause)));
         if(cause instanceof MyException) {

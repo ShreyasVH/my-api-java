@@ -7,6 +7,8 @@ import myapi.models.MovieFormat;
 import myapi.models.ValidationResponse;
 import myapi.services.FormatService;
 import myapi.services.RedisService;
+import myapi.utils.Logger;
+import play.libs.Json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,18 +36,26 @@ public class FormatServiceImpl implements FormatService
         List<MovieFormat> formats = new ArrayList<>();
         if(redisService.getIsConnected())
         {
-            Object formatList = redisService.get("api::formats");
-            if((null == formatList) || !(formatList instanceof List))
+            try
             {
-                formats = formatDao.getAllFormats();
-                if(!formats.isEmpty())
+                Object formatList = redisService.get("api::formats");
+                if((null == formatList) || !(formatList instanceof List))
                 {
-                    redisService.set("api::formats", formats);
+                    formats = formatDao.getAllFormats();
+                    if(!formats.isEmpty())
+                    {
+                        redisService.set("api::formats", formats);
+                    }
+                }
+                else
+                {
+                    formats = (List<MovieFormat>) formatList;
                 }
             }
-            else
+            catch(Exception ex)
             {
-                formats = (List<MovieFormat>) formatList;
+                Logger.error("[getAllFormats]: Error while fetching formats from cache. Message: " + ex.getMessage() + ". Cause: " + ex.getCause() + ". Trace: " + Json.toJson(ex.getStackTrace()));
+                formats = formatDao.getAllFormats();
             }
         }
         else
