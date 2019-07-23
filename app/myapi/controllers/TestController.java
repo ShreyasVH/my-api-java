@@ -32,6 +32,9 @@ public class TestController extends Controller {
 
     public static F.Promise<Result> test()
     {
-        return F.Promise.promise(() -> ok("TEST"));
+        return F.Promise.promise(() -> {
+            System.out.println("Printing in test");
+            return ok("TEST");
+        });
     }
 }
