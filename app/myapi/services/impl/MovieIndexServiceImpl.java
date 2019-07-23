@@ -9,6 +9,7 @@ import myapi.models.Movie;
 import myapi.models.MovieAttribute;
 import myapi.models.Status;
 import myapi.models.ValidationResponse;
+import myapi.utils.Logger;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -17,7 +18,6 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import play.Logger;
 import myapi.services.MovieIndexService;
 import myapi.services.MovieService;
 import myapi.services.elastic.ElasticService;
@@ -25,9 +25,15 @@ import myapi.skeletons.requests.FilterRequest;
 import myapi.skeletons.responses.ElasticResponse;
 import myapi.skeletons.responses.MovieSnippet;
 import myapi.utils.Utils;
+import play.libs.Json;
 
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by shreyas.hande on 12/10/17.
@@ -35,7 +41,6 @@ import java.util.*;
 public class MovieIndexServiceImpl implements MovieIndexService {
     private final MovieService movieService;
     private final ElasticService elasticService;
-    private final Logger.ALogger LOGGER = Logger.of(MovieIndexServiceImpl.class);
 
     @Inject
     public MovieIndexServiceImpl(MovieService movieService, ElasticService elasticService)
@@ -183,15 +188,15 @@ public class MovieIndexServiceImpl implements MovieIndexService {
     {
         List<MovieSnippet> movies = movieService.getAllMoviesFromDB();
         Boolean isCompleteSuccess = true;
-        LOGGER.debug("Reindexing " + movies.size() + " movies");
+        Logger.debug("Reindexing " + movies.size() + " movies");
         Long counter = 1L;
         for(MovieSnippet movieSnippet : movies)
         {
-            LOGGER.debug("Indexing movie " + counter.toString() + "/" + movies.size());
+            Logger.debug("Indexing movie " + counter.toString() + "/" + movies.size());
             Boolean isSuccess = indexMovie(movieSnippet);
             if(!isSuccess)
             {
-                LOGGER.error("[reIndexMoviesFromDB] : Failed to index movie. Id : " + movieSnippet.id);
+                Logger.error("[reIndexMoviesFromDB] : Failed to index movie. Id : " + movieSnippet.id);
             }
             isCompleteSuccess = (isCompleteSuccess && isSuccess);
             counter++;
@@ -241,7 +246,7 @@ public class MovieIndexServiceImpl implements MovieIndexService {
             }
             catch(Exception ex)
             {
-                LOGGER.error("[indexMovie] Error while indexing movie.", ex);
+                Logger.error("[indexMovie] Error while indexing movie. Message: " + ex.getMessage() + ". Cause: " + ex.getCause() + ". Trace: " + Json.toJson(ex.getStackTrace()));
             }
         });
     }
