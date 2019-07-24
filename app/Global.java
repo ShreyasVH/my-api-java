@@ -45,7 +45,7 @@ public class Global extends GlobalSettings
     @Override
     public F.Promise<Result> onError(Http.RequestHeader request, Throwable t)
     {
-        Logger.error("[onError]: Error while fetching formats from cache. Message: " + t.getMessage() + ". Cause: " + t.getCause() + ". Trace: " + Json.toJson(t.getStackTrace()));
+        Logger.error("[onError]: Exception thrown. Message: " + t.getMessage() + ". Cause: " + t.getCause() + ". Trace: " + Json.toJson(t.getStackTrace()));
         Throwable cause = t.getCause();
         Result response = Results.internalServerError(Json.toJson(Response.getErrorResponse(cause)));
         if(cause instanceof MyException) {
