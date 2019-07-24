@@ -37,7 +37,7 @@ public class Response
         GenericResponse errorResponse = new GenericResponse();
         errorResponse.setType(ResponseType.ERROR);
         errorResponse.setCode(ErrorResponse.API_FAILED.getCode());
-        errorResponse.setDescription(exception.getMessage());
+        errorResponse.setDescription(exception.getMessage() + ". Trace: " + Json.toJson(exception.getStackTrace()));
         return errorResponse;
     }
 
