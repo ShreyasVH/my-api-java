@@ -89,25 +89,29 @@ public class MovieIndexServiceImpl implements MovieIndexService {
         {
             Map.Entry entry = (Map.Entry) filterIterator.next();
             MovieAttribute movieAttribute = MovieAttribute.getMovieAttributeByName(entry.getKey().toString());
-            if(Constants.FIELD_TYPE_NORMAL.equals(movieAttribute.getType()))
+            List valueArray = (List) entry.getValue();
+            if(!valueArray.isEmpty())
             {
-                query.must(QueryBuilders.termsQuery(entry.getKey().toString(), (List) entry.getValue()));
-            }
-            else if(Constants.FIELD_TYPE_NESTED.equals(movieAttribute.getType()))
-            {
-                QueryBuilder nestedQuery = QueryBuilders.nestedQuery(movieAttribute.getNestedLevel(), QueryBuilders.termsQuery(movieAttribute.getNestedTerm(), (List) entry.getValue()),  ScoreMode.None);
-                query.must(nestedQuery);
-            }
-            else if(Constants.FIELD_TYPE_RANGE.equals(movieAttribute.getType()))
-            {
-                List valueArray = (List) entry.getValue();
-                if(valueArray.size() == 1)
+                if(Constants.FIELD_TYPE_NORMAL.equals(movieAttribute.getType()))
                 {
-                    valueArray.add(valueArray.get(0));
+                    query.must(QueryBuilders.termsQuery(entry.getKey().toString(), (List) entry.getValue()));
                 }
+                else if(Constants.FIELD_TYPE_NESTED.equals(movieAttribute.getType()))
+                {
+                    QueryBuilder nestedQuery = QueryBuilders.nestedQuery(movieAttribute.getNestedLevel(), QueryBuilders.termsQuery(movieAttribute.getNestedTerm(), (List) entry.getValue()),  ScoreMode.None);
+                    query.must(nestedQuery);
+                }
+                else if(Constants.FIELD_TYPE_RANGE.equals(movieAttribute.getType()))
+                {
 
-                Collections.sort(valueArray);
-                query.must(QueryBuilders.rangeQuery(movieAttribute.getFieldName()).from(valueArray.get(0), true).to(valueArray.get(1), true));
+                    if(valueArray.size() == 1)
+                    {
+                        valueArray.add(valueArray.get(0));
+                    }
+
+                    Collections.sort(valueArray);
+                    query.must(QueryBuilders.rangeQuery(movieAttribute.getFieldName()).from(valueArray.get(0), true).to(valueArray.get(1), true));
+                }
             }
         }
 
