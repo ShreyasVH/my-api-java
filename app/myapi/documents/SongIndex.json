@@ -1,211 +1,230 @@
 {
   "aliases": {},
   "mappings": {
-    "song": {
-      "properties": {
-        "composers": {
-          "type": "nested",
-          "properties": {
-            "gender": {
-              "type": "keyword"
-            },
-            "id": {
-              "type": "keyword"
-            },
-            "name": {
-              "type": "keyword"
-            }
+    "properties": {
+      "composers": {
+        "type": "nested",
+        "properties": {
+          "gender": {
+            "type": "keyword"
+          },
+          "id": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "keyword"
           }
-        },
-        "id": {
-          "type": "keyword",
-          "fields": {
-            "sort": {
-              "type": "keyword"
-            }
+        }
+      },
+      "id": {
+        "type": "keyword",
+        "fields": {
+          "sort": {
+            "type": "keyword"
           }
-        },
-        "lyricists": {
-          "type": "nested",
-          "properties": {
-            "gender": {
-              "type": "keyword"
-            },
-            "id": {
-              "type": "keyword"
-            },
-            "name": {
-              "type": "keyword"
-            }
+        }
+      },
+      "lyricists": {
+        "type": "nested",
+        "properties": {
+          "gender": {
+            "type": "keyword"
+          },
+          "id": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "keyword"
           }
-        },
-        "movie": {
-          "type": "nested",
-          "properties": {
-            "actors": {
-              "type": "nested",
-              "properties": {
-                "gender": {
-                  "type": "keyword"
-                },
-                "id": {
-                  "type": "keyword"
-                },
-                "name": {
-                  "type": "keyword"
-                }
-              }
-            },
-            "basename": {
-              "type": "keyword",
-              "fields": {
-                "sort": {
-                  "type": "keyword"
-                }
-              }
-            },
-            "directors": {
-              "type": "nested",
-              "properties": {
-                "gender": {
-                  "type": "keyword"
-                },
-                "id": {
-                  "type": "keyword"
-                },
-                "name": {
-                  "type": "keyword"
-                }
-              }
-            },
-            "format": {
-              "type": "nested",
-              "properties": {
-                "id": {
-                  "type": "long",
-                  "fields": {
-                    "sort": {
-                      "type": "long"
-                    }
+        }
+      },
+      "movie": {
+        "type": "nested",
+        "properties": {
+          "actors": {
+            "type": "nested",
+            "properties": {
+              "gender": {
+                "type": "keyword"
+              },
+              "id": {
+                "type": "keyword"
+              },
+              "imageUrl": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
                   }
-                },
-                "name": {
-                  "type": "keyword"
-                }
-              }
-            },
-            "id": {
-              "type": "long",
-              "fields": {
-                "sort": {
-                  "type": "long"
-                }
-              }
-            },
-            "language": {
-              "type": "nested",
-              "properties": {
-                "id": {
-                  "type": "long",
-                  "fields": {
-                    "sort": {
-                      "type": "long"
-                    }
-                  }
-                },
-                "name": {
-                  "type": "keyword"
-                }
-              }
-            },
-            "name": {
-              "type": "text",
-              "fields": {
-                "sort": {
-                  "type": "keyword"
                 }
               },
-              "analyzer": "my_analyzer",
-              "search_analyzer": "my_search_analyzer"
-            },
-            "quality": {
-              "type": "keyword",
-              "fields": {
-                "sort": {
-                  "type": "keyword"
+              "name": {
+                "type": "keyword"
+              }
+            }
+          },
+          "basename": {
+            "type": "keyword",
+            "fields": {
+              "sort": {
+                "type": "keyword"
+              }
+            }
+          },
+          "directors": {
+            "type": "nested",
+            "properties": {
+              "gender": {
+                "type": "keyword"
+              },
+              "id": {
+                "type": "keyword"
+              },
+              "imageUrl": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
                 }
+              },
+              "name": {
+                "type": "keyword"
+              }
+            }
+          },
+          "format": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "fields": {
+                  "sort": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "name": {
+                "type": "keyword"
+              }
+            }
+          },
+          "id": {
+            "type": "long",
+            "fields": {
+              "sort": {
+                "type": "long"
+              }
+            }
+          },
+          "imageUrl": {
+            "type": "text"
+          },
+          "language": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "fields": {
+                  "sort": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "name": {
+                "type": "keyword"
+              }
+            }
+          },
+          "name": {
+            "type": "text",
+            "fields": {
+              "sort": {
+                "type": "keyword"
               }
             },
-            "seen_in_theatre": {
-              "type": "boolean",
-              "fields": {
-                "sort": {
-                  "type": "boolean"
-                }
+            "analyzer": "my_analyzer",
+            "search_analyzer": "my_search_analyzer"
+          },
+          "quality": {
+            "type": "keyword",
+            "fields": {
+              "sort": {
+                "type": "keyword"
               }
-            },
-            "size": {
-              "type": "long",
-              "fields": {
-                "sort": {
-                  "type": "long"
-                }
+            }
+          },
+          "seen_in_theatre": {
+            "type": "boolean",
+            "fields": {
+              "sort": {
+                "type": "boolean"
               }
-            },
-            "status": {
-              "type": "keyword",
-              "fields": {
-                "sort": {
-                  "type": "keyword"
-                }
+            }
+          },
+          "size": {
+            "type": "long",
+            "fields": {
+              "sort": {
+                "type": "long"
               }
-            },
-            "subtitles": {
-              "type": "boolean",
-              "fields": {
-                "sort": {
-                  "type": "boolean"
-                }
+            }
+          },
+          "status": {
+            "type": "keyword",
+            "fields": {
+              "sort": {
+                "type": "keyword"
               }
-            },
-            "year": {
-              "type": "long",
-              "fields": {
-                "sort": {
-                  "type": "long"
-                }
+            }
+          },
+          "subtitles": {
+            "type": "boolean",
+            "fields": {
+              "sort": {
+                "type": "boolean"
+              }
+            }
+          },
+          "year": {
+            "type": "integer",
+            "fields": {
+              "sort": {
+                "type": "integer"
               }
             }
           }
-        },
-        "name": {
-          "type": "keyword",
-          "fields": {
-            "sort": {
-              "type": "keyword"
-            }
+        }
+      },
+      "name": {
+        "type": "keyword",
+        "fields": {
+          "sort": {
+            "type": "keyword"
           }
-        },
-        "singers": {
-          "type": "nested",
-          "properties": {
-            "gender": {
-              "type": "keyword"
-            },
-            "id": {
-              "type": "keyword"
-            },
-            "name": {
-              "type": "keyword"
-            }
+        }
+      },
+      "singers": {
+        "type": "nested",
+        "properties": {
+          "gender": {
+            "type": "keyword"
+          },
+          "id": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "keyword"
           }
-        },
-        "size": {
-          "type": "long",
-          "fields": {
-            "sort": {
-              "type": "long"
-            }
+        }
+      },
+      "size": {
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
           }
         }
       }
@@ -214,15 +233,18 @@
   "settings": {
     "index": {
       "number_of_shards": "5",
+      "max_ngram_diff": "10",
       "analysis": {
         "analyzer": {
           "my_analyzer": {
+            "type": "custom",
             "filter": [
               "lowercase"
             ],
             "tokenizer": "my_tokenizer"
           },
           "my_search_analyzer": {
+            "type": "custom",
             "tokenizer": "lowercase"
           }
         },
