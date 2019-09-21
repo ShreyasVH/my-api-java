@@ -1,6 +1,5 @@
 package myapi.services.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import myapi.constants.Constants;
 import myapi.exceptions.MyException;
@@ -14,9 +13,6 @@ import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import myapi.services.MovieIndexService;
 import myapi.services.MovieService;
@@ -26,12 +22,13 @@ import myapi.skeletons.responses.ElasticResponse;
 import myapi.skeletons.responses.MovieSnippet;
 import myapi.utils.Utils;
 import play.libs.Json;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -80,64 +77,76 @@ public class MovieIndexServiceImpl implements MovieIndexService {
         return getMoviesWithFilter(filterRequest).getDocList();
     }
 
-    public ElasticResponse getMovieElasticResponse(FilterRequest filterRequest)
+    private ElasticResponse getMovieElasticResponse(FilterRequest filterRequest)
     {
+        SearchRequest request = new SearchRequest("movies");
+
+        Map<String, List<String>> filters = filterRequest.getFilters();
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.from(filterRequest.getOffset());
+        builder.size(filterRequest.getCount());
+
         BoolQueryBuilder query = QueryBuilders.boolQuery();
-        Iterator filterIterator = filterRequest.getFilters().entrySet().iterator();
-        List<SortBuilder> sortMapList = new ArrayList<>();
-        while(filterIterator.hasNext())
+
+        if(!filters.isEmpty())
         {
-            Map.Entry entry = (Map.Entry) filterIterator.next();
-            MovieAttribute movieAttribute = MovieAttribute.getMovieAttributeByName(entry.getKey().toString());
-            List valueArray = (List) entry.getValue();
-            if(!valueArray.isEmpty())
+            for(Map.Entry<String, List<String>> entry: filters.entrySet())
             {
-                if(Constants.FIELD_TYPE_NORMAL.equals(movieAttribute.getType()))
+                String key = entry.getKey();
+                List<String> valueList = entry.getValue();
+                if(!valueList.isEmpty())
                 {
-                    query.must(QueryBuilders.termsQuery(entry.getKey().toString(), (List) entry.getValue()));
-                }
-                else if(Constants.FIELD_TYPE_NESTED.equals(movieAttribute.getType()))
-                {
-                    QueryBuilder nestedQuery = QueryBuilders.nestedQuery(movieAttribute.getNestedLevel(), QueryBuilders.termsQuery(movieAttribute.getNestedTerm(), (List) entry.getValue()),  ScoreMode.None);
-                    query.must(nestedQuery);
-                }
-                else if(Constants.FIELD_TYPE_RANGE.equals(movieAttribute.getType()))
-                {
-
-                    if(valueArray.size() == 1)
+                    MovieAttribute movieAttribute = MovieAttribute.getMovieAttributeByName(key);
+                    if(null != movieAttribute)
                     {
-                        valueArray.add(valueArray.get(0));
-                    }
+                        if(Constants.FIELD_TYPE_NORMAL.equals(movieAttribute.getType()))
+                        {
+                            query.must(QueryBuilders.termsQuery(key, valueList));
+                        }
+                        else if(Constants.FIELD_TYPE_NESTED.equals(movieAttribute.getType()))
+                        {
+                            QueryBuilder nestedQuery = QueryBuilders.nestedQuery(movieAttribute.getNestedLevel(), QueryBuilders.termsQuery(movieAttribute.getNestedTerm(), valueList),  ScoreMode.None);
+                            query.must(nestedQuery);
+                        }
+                        else if(Constants.FIELD_TYPE_RANGE.equals(movieAttribute.getType()))
+                        {
 
-                    Collections.sort(valueArray);
-                    query.must(QueryBuilders.rangeQuery(movieAttribute.getFieldName()).from(valueArray.get(0), true).to(valueArray.get(1), true));
+                            if(valueList.size() == 1)
+                            {
+                                valueList.add(valueList.get(0));
+                            }
+
+                            Collections.sort(valueList);
+                            query.must(QueryBuilders.rangeQuery(movieAttribute.getFieldName()).from(valueList.get(0), true).to(valueList.get(1), true));
+                        }
+                    }
                 }
             }
         }
+        builder.query(query);
 
-        for (Object o : filterRequest.getSortMap().entrySet())
+        Map<String, SortOrder> sortMap = filterRequest.getSortMap();
+        for(Map.Entry<String, SortOrder> sortField: sortMap.entrySet())
         {
-            Map.Entry entry = (Map.Entry) o;
-            MovieAttribute movieAttribute = MovieAttribute.getMovieAttributeByName(entry.getKey().toString());
-            FieldSortBuilder sortMap = null;
-            String sortKey = Constants.SORT_KEY_ELASTIC;
-            if (Constants.FIELD_TYPE_NORMAL.equals(movieAttribute.getType()) || Constants.FIELD_TYPE_RANGE.equals(movieAttribute.getType())) {
-                sortKey = movieAttribute.getFieldName() + sortKey;
-                sortMap = SortBuilders.fieldSort(sortKey);
-            } else if (Constants.FIELD_TYPE_NESTED.equals(movieAttribute.getType())) {
-                sortKey = movieAttribute.getNestedTerm() + sortKey;
-                sortMap = SortBuilders.fieldSort(sortKey);
-                sortMap.setNestedPath(movieAttribute.getNestedLevel());
+            String key = sortField.getKey();
+            SortOrder order = sortField.getValue();
+
+            MovieAttribute movieAttribute = MovieAttribute.getMovieAttributeByName(key);
+            if(null != movieAttribute)
+            {
+                String sortKey = (key + ".sort");
+                builder.sort(sortKey, order);
             }
-            sortMap.order((SortOrder) entry.getValue());
-            sortMapList.add(sortMap);
         }
 
-        if(!filterRequest.getIncludeDeleted())
+        if(!sortMap.containsKey("name"))
         {
-            query.mustNot(QueryBuilders.termQuery(MovieAttribute.STATUS.getFieldName(), Status.DELETED.toString()));
+            builder.sort("name.sort", SortOrder.ASC);
         }
-        return elasticService.executeElasticRequest("movie", "movie", query, false, filterRequest.getOffset(), filterRequest.getCount(), sortMapList, MovieSnippet.class);
+
+        request.source(builder);
+        return elasticService.search(request, MovieSnippet.class);
     }
 
     public ElasticResponse getMoviesWithFilter(FilterRequest filterRequest)
@@ -153,6 +162,10 @@ public class MovieIndexServiceImpl implements MovieIndexService {
     @Override
     public List<MovieSnippet> getMoviesWithActorCombination(List<String> actorIds)
     {
+        SearchRequest request = new SearchRequest("movies");
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
         BoolQueryBuilder finalQuery = QueryBuilders.boolQuery();
         for(String actorId : actorIds)
         {
@@ -160,15 +173,23 @@ public class MovieIndexServiceImpl implements MovieIndexService {
             finalQuery.must(nestedQuery);
         }
         finalQuery.mustNot(QueryBuilders.termQuery(MovieAttribute.STATUS.getFieldName(), Status.DELETED.toString()));
-        List<SortBuilder> sortMapList = new ArrayList<>();
-        sortMapList.add(SortBuilders.fieldSort(MovieAttribute.YEAR.getFieldName() + Constants.SORT_KEY_ELASTIC).order(SortOrder.DESC));
-        sortMapList.add(SortBuilders.fieldSort(MovieAttribute.ID.getFieldName() + Constants.SORT_KEY_ELASTIC).order(SortOrder.DESC));
-        return elasticService.executeElasticRequest("movie", "movie", finalQuery, false, Constants.DEFAULT_ELASTIC_OFFSET, Constants.DEFAULT_ELASTIC_COUNT, sortMapList, MovieSnippet.class).getDocList();
+
+        builder.query(finalQuery);
+
+        builder.sort(MovieAttribute.YEAR.getFieldName() + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
+        builder.sort(MovieAttribute.ID.getFieldName() + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
+
+        request.source(builder);
+        return elasticService.search(request, MovieSnippet.class).getDocList();
     }
 
     @Override
     public List<MovieSnippet> getMoviesByKeyword(String keyword)
     {
+        SearchRequest request = new SearchRequest("movies");
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
         keyword = URLDecoder.decode(keyword);
         String[] words = keyword.split(" ");
         BoolQueryBuilder finalQuery = QueryBuilders.boolQuery();
@@ -181,10 +202,14 @@ public class MovieIndexServiceImpl implements MovieIndexService {
             }
         }
         finalQuery.mustNot(QueryBuilders.termQuery(MovieAttribute.STATUS.getFieldName(), Status.DELETED.toString()));
-        List<SortBuilder> sortMapList = new ArrayList<>();
-        sortMapList.add(SortBuilders.fieldSort(MovieAttribute.NAME.getFieldName() + Constants.SORT_KEY_ELASTIC).order(SortOrder.ASC));
-        sortMapList.add(SortBuilders.fieldSort(MovieAttribute.ID.getFieldName() + Constants.SORT_KEY_ELASTIC).order(SortOrder.ASC));
-        return elasticService.executeElasticRequest("movie", "movie", finalQuery, false, Constants.DEFAULT_ELASTIC_OFFSET, Constants.DEFAULT_ELASTIC_COUNT, sortMapList, MovieSnippet.class).getDocList();
+
+        builder.query(finalQuery);
+
+        builder.sort(MovieAttribute.NAME.getFieldName() + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
+        builder.sort(MovieAttribute.ID.getFieldName() + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
+
+        request.source(builder);
+        return elasticService.search(request, MovieSnippet.class).getDocList();
     }
 
     @Override
@@ -224,16 +249,7 @@ public class MovieIndexServiceImpl implements MovieIndexService {
 
     public Boolean indexMovie(MovieSnippet movieSnippet, Boolean isUpdateRequired)
     {
-        Boolean isSuccess;
-        if(isUpdateRequired)
-        {
-            isSuccess = elasticService.update("movie", "movie", movieSnippet.getId().toString(), Utils.convertObject(movieSnippet, JsonNode.class).toString());
-        }
-        else
-        {
-            isSuccess = elasticService.create("movie", "movie", movieSnippet.getId().toString(), Utils.convertObject(movieSnippet, JsonNode.class).toString());
-        }
-        return isSuccess;
+        return elasticService.index("movies", movieSnippet.getId().toString(), movieSnippet);
     }
 
     public void indexMovieAsThread(MovieSnippet movieSnippet)

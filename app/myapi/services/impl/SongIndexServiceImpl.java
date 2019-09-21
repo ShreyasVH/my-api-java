@@ -1,6 +1,5 @@
 package myapi.services.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import myapi.constants.Constants;
 import myapi.exceptions.MyException;
@@ -15,16 +14,17 @@ import myapi.skeletons.responses.ElasticResponse;
 import myapi.skeletons.responses.SongSnippet;
 import myapi.utils.Utils;
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import play.Logger;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by shreyas.hande on 1/7/18.
@@ -76,16 +76,7 @@ public class SongIndexServiceImpl implements SongIndexService
     @Override
     public Boolean indexSong(SongSnippet songSnippet, Boolean isUpdateRequired)
     {
-        Boolean isSuccess;
-        if(isUpdateRequired)
-        {
-            isSuccess = elasticService.update("song", "song", songSnippet.getId(), Utils.convertObject(songSnippet, JsonNode.class).toString());
-        }
-        else
-        {
-            isSuccess = elasticService.create("song", "song", songSnippet.getId(), Utils.convertObject(songSnippet, JsonNode.class).toString());
-        }
-        return isSuccess;
+        return elasticService.index("songs", songSnippet.getId(), songSnippet);
     }
 
     @Override
@@ -112,44 +103,74 @@ public class SongIndexServiceImpl implements SongIndexService
     @Override
     public ElasticResponse getSongElasticResponse(FilterRequest filterRequest)
     {
+        SearchRequest request = new SearchRequest("songs");
+
+        Map<String, List<String>> filters = filterRequest.getFilters();
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.from(filterRequest.getOffset());
+        builder.size(filterRequest.getCount());
+
         BoolQueryBuilder query = QueryBuilders.boolQuery();
-        Iterator filterIterator = filterRequest.getFilters().entrySet().iterator();
-        List<SortBuilder> sortMapList = new ArrayList<>();
 
-        while(filterIterator.hasNext())
+        if(!filters.isEmpty())
         {
-            Map.Entry entry = (Map.Entry) filterIterator.next();
-            SongAttribute songAttribute = SongAttribute.getSongAttributeByName(entry.getKey().toString());
-            if(Constants.FIELD_TYPE_NORMAL.equals(songAttribute.getType()))
+            for(Map.Entry<String, List<String>> entry: filters.entrySet())
             {
-                query.must(QueryBuilders.termsQuery(entry.getKey().toString(), (List) entry.getValue()));
+                String key = entry.getKey();
+                List<String> valueList = entry.getValue();
+                if(!valueList.isEmpty())
+                {
+                    SongAttribute songAttribute = SongAttribute.getSongAttributeByName(key);
+                    if(null != songAttribute)
+                    {
+                        if(Constants.FIELD_TYPE_NORMAL.equals(songAttribute.getType()))
+                        {
+                            query.must(QueryBuilders.termsQuery(key, valueList));
+                        }
+                        else if(Constants.FIELD_TYPE_NESTED.equals(songAttribute.getType()))
+                        {
+                            QueryBuilder nestedQuery = QueryBuilders.nestedQuery(songAttribute.getNestedLevel(), QueryBuilders.termsQuery(songAttribute.getNestedTerm(), (List) entry.getValue()),  ScoreMode.None);
+                            query.must(nestedQuery);
+                        }
+                        else if(Constants.FIELD_TYPE_RANGE.equals(songAttribute.getType()))
+                        {
+
+                            if(valueList.size() == 1)
+                            {
+                                valueList.add(valueList.get(0));
+                            }
+
+                            Collections.sort(valueList);
+                            query.must(QueryBuilders.rangeQuery(songAttribute.getFieldName()).from(valueList.get(0), true).to(valueList.get(1), true));
+                        }
+                    }
+                }
             }
-            else if(Constants.FIELD_TYPE_NESTED.equals(songAttribute.getType()))
+        }
+        builder.query(query);
+
+        Map<String, SortOrder> sortMap = filterRequest.getSortMap();
+        for(Map.Entry<String, SortOrder> sortField: sortMap.entrySet())
+        {
+            String key = sortField.getKey();
+            SortOrder order = sortField.getValue();
+
+            SongAttribute songAttribute = SongAttribute.getSongAttributeByName(key);
+            if(null != songAttribute)
             {
-                QueryBuilder nestedQuery = QueryBuilders.nestedQuery(songAttribute.getNestedLevel(), QueryBuilders.termsQuery(songAttribute.getNestedTerm(), (List) entry.getValue()),  ScoreMode.None);
-                query.must(nestedQuery);
+                String sortKey = (key + ".sort");
+                builder.sort(sortKey, order);
             }
         }
 
-        for (Object o : filterRequest.getSortMap().entrySet())
+        if(!sortMap.containsKey("name"))
         {
-            Map.Entry entry = (Map.Entry) o;
-            SongAttribute songAttribute = SongAttribute.getSongAttributeByName(entry.getKey().toString());
-            FieldSortBuilder sortMap = null;
-            String sortKey = Constants.SORT_KEY_ELASTIC;
-            if (Constants.FIELD_TYPE_NORMAL.equals(songAttribute.getType())) {
-                sortKey = songAttribute.getFieldName() + sortKey;
-                sortMap = SortBuilders.fieldSort(sortKey);
-            } else if (Constants.FIELD_TYPE_NESTED.equals(songAttribute.getType())) {
-                sortKey = songAttribute.getNestedTerm() + sortKey;
-                sortMap = SortBuilders.fieldSort(sortKey);
-                sortMap.setNestedPath(songAttribute.getNestedLevel());
-            }
-            sortMap.order((SortOrder) entry.getValue());
-            sortMapList.add(sortMap);
+            builder.sort("name.sort", SortOrder.ASC);
         }
 
-        return elasticService.executeElasticRequest("song", "song", query, false, filterRequest.getOffset(), filterRequest.getCount(), sortMapList, SongSnippet.class);
+        request.source(builder);
+        return elasticService.search(request, SongSnippet.class);
     }
 
     @Override

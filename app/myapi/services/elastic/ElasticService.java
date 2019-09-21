@@ -1,13 +1,15 @@
 package myapi.services.elastic;
 
-import myapi.constants.Constants;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import play.Logger;
-import play.Play;
 
-import java.net.InetSocketAddress;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestClient;
+import org.apache.http.HttpHost;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 
 /**
  * Created by shreyas.hande on 12/10/17.
@@ -18,15 +20,27 @@ public class ElasticService extends ElasticSearch
 
     public ElasticService()
     {
-        Settings settings = Settings.builder().put("cluster.name", System.getenv("ELASTIC_CLUSTER")).build();
-        client = new PreBuiltTransportClient(settings);
-        try
+        if(null == client)
         {
-            client.addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(System.getenv("ELASTIC_IP"), Integer.parseInt(System.getenv("ELASTIC_PORT")))));
-        }
-        catch (Exception ex)
-        {
-            LOGGER.error("Error while connecting to elastic client", ex);
+            try
+            {
+                RestClientBuilder builder = RestClient.builder(new HttpHost(System.getenv("ELASTIC_IP_HTTP"), Integer.parseInt(System.getenv("ELASTIC_PORT_HTTP")), System.getenv("ELASTIC_SCHEME")));
+
+
+                if(1 == Integer.parseInt(System.getenv("ELASTIC_USE_CREDENTIALS")))
+                {
+                    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(System.getenv("ELASTIC_USERNAME"), System.getenv("ELASTIC_PASSWORD")));
+
+                    builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+                }
+
+                client = new RestHighLevelClient(builder);
+            }
+            catch(Exception ex)
+            {
+                String sh = "sh";
+            }
         }
     }
 }
