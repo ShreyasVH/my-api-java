@@ -121,7 +121,7 @@ public class MovieDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            String sh = "sh";
         }
         return dbList;
     }
