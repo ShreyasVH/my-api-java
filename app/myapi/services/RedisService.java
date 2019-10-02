@@ -19,20 +19,20 @@ public class RedisService
 
     @Getter
     @Setter
-    private Boolean isConnected;
+    private Boolean isConnected = false;
 
     public RedisService()
     {
-        JedisPool pool = new JedisPool(System.getenv("REDIS_URI"));
-        setIsConnected(true);
-        try
-        {
-            redis = pool.getResource();
-        }
-        catch(JedisConnectionException e)
-        {
-            setIsConnected(false);
-        }
+//        JedisPool pool = new JedisPool(System.getenv("REDIS_URI"));
+//        setIsConnected(true);
+//        try
+//        {
+//            redis = pool.getResource();
+//        }
+//        catch(JedisConnectionException e)
+//        {
+//            setIsConnected(false);
+//        }
     }
 
     public void set(String key, Object value)
