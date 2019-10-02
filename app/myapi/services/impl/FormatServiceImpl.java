@@ -33,56 +33,20 @@ public class FormatServiceImpl implements FormatService
     @Override
     public List<MovieFormat> getAllFormats()
     {
-        List<MovieFormat> formats = new ArrayList<>();
-        if(redisService.getIsConnected())
-        {
-            try
-            {
-                Object formatList = redisService.get("api::formats");
-                if((null == formatList) || !(formatList instanceof List))
-                {
-                    formats = formatDao.getAllFormats();
-                    if(!formats.isEmpty())
-                    {
-                        redisService.set("api::formats", formats);
-                    }
-                }
-                else
-                {
-                    formats = (List<MovieFormat>) formatList;
-                }
-            }
-            catch(Exception ex)
-            {
-                Logger.error("[getAllFormats]: Error while fetching formats from cache. Message: " + ex.getMessage() + ". Cause: " + ex.getCause() + ". Trace: " + Json.toJson(ex.getStackTrace()));
-                formats = formatDao.getAllFormats();
-            }
-        }
-        else
-        {
-            formats = formatDao.getAllFormats();
-        }
-        return  formats;
+        return formatDao.getAllFormats();
     }
 
     @Override
     public MovieFormat getFormatById(Long formatId) throws NotFoundException
     {
         MovieFormat format = null;
-        if(redisService.getIsConnected())
+        for(MovieFormat f : getAllFormats())
         {
-            for(MovieFormat f : getAllFormats())
+            if(f.getId().equals(formatId))
             {
-                if(f.getId().equals(formatId))
-                {
-                    format = f;
-                    break;
-                }
+                format = f;
+                break;
             }
-        }
-        else
-        {
-            format = formatDao.getFormatById(formatId);
         }
 
         if(null == format)
@@ -97,20 +61,13 @@ public class FormatServiceImpl implements FormatService
     public MovieFormat getFormatByName(String name) throws NotFoundException
     {
         MovieFormat format = null;
-        if(redisService.getIsConnected())
+        for(MovieFormat f : getAllFormats())
         {
-            for(MovieFormat f : getAllFormats())
+            if(f.getName().equals(name))
             {
-                if(f.getName().equals(name))
-                {
-                    format = f;
-                    break;
-                }
+                format = f;
+                break;
             }
-        }
-        else
-        {
-            format = formatDao.getFormatByName(name);
         }
 
         if(null == format)

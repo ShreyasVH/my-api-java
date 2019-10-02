@@ -32,56 +32,20 @@ public class LanguageServiceImpl implements LanguageService
     @Override
     public List<Language> getAllLanguages()
     {
-        List<Language> languages = new ArrayList<>();
-        if(redisService.getIsConnected())
-        {
-            try
-            {
-                Object languageList = redisService.get("api::languages");
-                if((null == languageList) || !(languageList instanceof List))
-                {
-                    languages = languageDao.getAllLanguages();
-                    if(!languages.isEmpty())
-                    {
-                        redisService.set("api::languages", languages);
-                    }
-                }
-                else
-                {
-                    languages = (List<Language>) languageList;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.error("[getAllLanguages]: Error while fetching languages from cache. Message: " + ex.getMessage() + ". Cause: " + ex.getCause() + ". Trace: " + Json.toJson(ex.getStackTrace()));
-                languages = languageDao.getAllLanguages();
-            }
-        }
-        else
-        {
-            languages = languageDao.getAllLanguages();
-        }
-        return languages;
+        return languageDao.getAllLanguages();
     }
 
     @Override
     public Language getLanguageById(Long languageId) throws NotFoundException
     {
         Language language = null;
-        if(redisService.getIsConnected())
+        for(Language lang : getAllLanguages())
         {
-            for(Language lang : getAllLanguages())
+            if(lang.getId().equals(languageId))
             {
-                if(lang.getId().equals(languageId))
-                {
-                    language = lang;
-                    break;
-                }
+                language = lang;
+                break;
             }
-        }
-        else
-        {
-            language = languageDao.getLanguageById(languageId);
         }
 
         if(null == language)
@@ -97,20 +61,13 @@ public class LanguageServiceImpl implements LanguageService
     {
         name = Utils.ucfirst(name);
         Language language = null;
-        if(redisService.getIsConnected())
+        for(Language lang : getAllLanguages())
         {
-            for(Language lang : getAllLanguages())
+            if(lang.getName().equals(name))
             {
-                if(lang.getName().equals(name))
-                {
-                    language = lang;
-                    break;
-                }
+                language = lang;
+                break;
             }
-        }
-        else
-        {
-            language = languageDao.getLanguageByName(name);
         }
 
         if(null == language)
