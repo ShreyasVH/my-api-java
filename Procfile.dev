@@ -1,1 +1,1 @@
-web: activator -jvm-debug "8021" "run 9021"
+web: activator -jvm-debug "8021" "~run 9021"

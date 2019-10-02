@@ -39,15 +39,7 @@ public class FormatServiceImpl implements FormatService
     @Override
     public MovieFormat getFormatById(Long formatId) throws NotFoundException
     {
-        MovieFormat format = null;
-        for(MovieFormat f : getAllFormats())
-        {
-            if(f.getId().equals(formatId))
-            {
-                format = f;
-                break;
-            }
-        }
+        MovieFormat format = this.formatDao.getFormatById(formatId);
 
         if(null == format)
         {
@@ -60,15 +52,7 @@ public class FormatServiceImpl implements FormatService
     @Override
     public MovieFormat getFormatByName(String name) throws NotFoundException
     {
-        MovieFormat format = null;
-        for(MovieFormat f : getAllFormats())
-        {
-            if(f.getName().equals(name))
-            {
-                format = f;
-                break;
-            }
-        }
+        MovieFormat format = this.formatDao.getFormatByName(name);
 
         if(null == format)
         {

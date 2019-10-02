@@ -38,15 +38,7 @@ public class LanguageServiceImpl implements LanguageService
     @Override
     public Language getLanguageById(Long languageId) throws NotFoundException
     {
-        Language language = null;
-        for(Language lang : getAllLanguages())
-        {
-            if(lang.getId().equals(languageId))
-            {
-                language = lang;
-                break;
-            }
-        }
+        Language language = this.languageDao.getLanguageById(languageId);
 
         if(null == language)
         {
@@ -60,15 +52,7 @@ public class LanguageServiceImpl implements LanguageService
     public Language getLanguageByName(String name) throws NotFoundException
     {
         name = Utils.ucfirst(name);
-        Language language = null;
-        for(Language lang : getAllLanguages())
-        {
-            if(lang.getName().equals(name))
-            {
-                language = lang;
-                break;
-            }
-        }
+        Language language = this.languageDao.getLanguageByName(name);
 
         if(null == language)
         {
