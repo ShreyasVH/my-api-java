@@ -124,6 +124,12 @@ public class MovieIndexServiceImpl implements MovieIndexService {
                 }
             }
         }
+
+        if(!filterRequest.getIncludeDeleted())
+        {
+            query.must(QueryBuilders.termQuery("status", Status.ENABLED.name()));
+        }
+
         builder.query(query);
 
         Map<String, SortOrder> sortMap = filterRequest.getSortMap();
