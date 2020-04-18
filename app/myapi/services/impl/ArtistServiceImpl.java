@@ -2,17 +2,21 @@ package myapi.services.impl;
 
 import com.google.inject.Inject;
 import myapi.dao.ArtistDao;
+import myapi.dao.MovieArtistMapDao;
 import myapi.exceptions.BadRequestException;
 import myapi.exceptions.MyException;
 import myapi.exceptions.NotFoundException;
-import myapi.models.Artist;
-import myapi.models.ErrorResponse;
-import myapi.models.ValidationResponse;
+import myapi.models.*;
 import myapi.services.ArtistService;
+import myapi.services.MovieIndexService;
 import myapi.skeletons.requests.ArtistRequest;
+import myapi.utils.Logger;
 import myapi.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by shreyas.hande on 12/11/17.
@@ -20,11 +24,20 @@ import java.util.List;
 public class ArtistServiceImpl implements ArtistService
 {
     private final ArtistDao artistDao;
+    private final MovieArtistMapDao movieArtistMapDao;
+    private final MovieIndexService movieIndexService;
 
     @Inject
-    public ArtistServiceImpl(ArtistDao artistDao)
+    public ArtistServiceImpl
+    (
+        ArtistDao artistDao,
+        MovieArtistMapDao movieArtistMapDao,
+        MovieIndexService movieIndexService
+    )
     {
         this.artistDao = artistDao;
+        this.movieArtistMapDao = movieArtistMapDao;
+        this.movieIndexService = movieIndexService;
     }
 
 
@@ -104,7 +117,45 @@ public class ArtistServiceImpl implements ArtistService
         if(isUpdateRequired)
         {
             boolean isSuccess = artistDao.saveArtist(existingArtist);
-            if(!isSuccess)
+
+            if(isSuccess)
+            {
+
+                Utils.scheduleOnce(new Runnable() {
+                    @Override
+                    public void run() {
+                        Set<Long> movieIds = new HashSet<>();
+
+                        List<MovieActorMap> actorMaps = movieArtistMapDao.getActorMapsForActor(artistRequest.getId());
+                        for(MovieActorMap actorMap: actorMaps)
+                        {
+                            movieIds.add(actorMap.getMovieId());
+                        }
+
+                        List<MovieDirectorMap> directorMaps = movieArtistMapDao.getDirectorMapsForArtist(artistRequest.getId());
+                        for(MovieDirectorMap directorMap: directorMaps)
+                        {
+                            movieIds.add(directorMap.getMovieId());
+                        }
+
+                        for(Long movieId: movieIds)
+                        {
+                            try
+                            {
+                                movieIndexService.indexMovie(movieId);
+                            }
+                            catch(Exception ex)
+                            {
+                                Logger.error("Error while indexing movie. id: " + movieId + ". Exception: " + ex);
+                            }
+                        }
+
+                        //TODO:
+                        //reindex songs as well
+                    }
+                });
+            }
+            else
             {
                 throw new BadRequestException(ErrorResponse.API_FAILED);
             }

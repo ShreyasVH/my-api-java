@@ -36,6 +36,20 @@ public class MovieArtistMapDao extends BaseDao
         return actorMaps;
     }
 
+    public List<MovieActorMap> getActorMapsForActor(String actorId)
+    {
+        List<MovieActorMap> actorMaps = new ArrayList<>();
+        try
+        {
+            actorMaps = db.find(MovieActorMap.class).where().eq("actorId", actorId).findList();
+        }
+        catch (Exception ex)
+        {
+            myapi.utils.Logger.error("Error while getting movies for actor. id: " + actorId + ". Exception: " + ex);
+        }
+        return actorMaps;
+    }
+
     public List<MovieDirectorMap> getDirectorMapsForMovie(Long movieId)
     {
         List<MovieDirectorMap> directorMaps = new ArrayList<>();
@@ -46,6 +60,20 @@ public class MovieArtistMapDao extends BaseDao
         catch (Exception ex)
         {
 
+        }
+        return directorMaps;
+    }
+
+    public List<MovieDirectorMap> getDirectorMapsForArtist(String directorId)
+    {
+        List<MovieDirectorMap> directorMaps = new ArrayList<>();
+        try
+        {
+            directorMaps = db.find(MovieDirectorMap.class).where().eq("directorId", directorId).findList();
+        }
+        catch (Exception ex)
+        {
+            myapi.utils.Logger.error("Error while getting movies for director. id: " + directorId + ". Exception: " + ex);
         }
         return directorMaps;
     }
