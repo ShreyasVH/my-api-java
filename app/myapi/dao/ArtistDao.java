@@ -5,7 +5,7 @@ import com.avaje.ebean.SqlRow;
 import com.google.inject.Inject;
 import myapi.models.Artist;
 import myapi.utils.Utils;
-import play.Logger;
+import myapi.utils.Logger;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -16,8 +16,6 @@ import java.util.List;
  */
 public class ArtistDao extends BaseDao
 {
-    private static final Logger.ALogger LOGGER = Logger.of(ArtistDao.class);
-
     @Inject
     public ArtistDao()
     {
@@ -33,7 +31,7 @@ public class ArtistDao extends BaseDao
         }
         catch (Exception ex)
         {
-
+            Logger.error("Error while getting artist by id. id: " + id + ". Exception: " + ex);
         }
         return artist;
     }
@@ -50,7 +48,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting all actors. Exception: " + ex);
         }
         return actors;
     }
@@ -67,7 +65,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting all directors. Exception: " + ex);
         }
         return directors;
     }
@@ -82,7 +80,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while saving artist. Exception: " + ex);
         }
         return isSuccess;
     }
@@ -96,7 +94,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting artist by name. name: " + name + ". Exception: " + ex);
         }
         return artist;
     }
@@ -111,7 +109,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting artist by keyword. keyword: " + keyword + ". Exception: " + ex);
         }
         return artists;
     }
@@ -128,7 +126,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getAllSingers] Error : ", ex);
+            Logger.error("Error while getting all singers. Exception: " + ex);
         }
         return singers;
     }
@@ -145,7 +143,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getAllComposers] Error : ", ex);
+            Logger.error("Error while getting all composers. Exception: " + ex);
         }
         return composers;
     }
@@ -162,7 +160,7 @@ public class ArtistDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getAllLyricists] Error : ", ex);
+            Logger.error("Error while getting all lyricists. Exception: " + ex);
         }
         return lyricists;
     }

@@ -13,7 +13,6 @@ import myapi.services.FormatService;
 import myapi.services.MovieService;
 import myapi.skeletons.responses.ElasticResponse;
 import myapi.skeletons.responses.FilterResponse;
-import play.Logger;
 import myapi.services.LanguageService;
 import myapi.services.MovieIndexService;
 import myapi.skeletons.requests.ActorsCombinationMoviesRequest;
@@ -38,16 +37,15 @@ public class MovieServiceImpl implements MovieService {
     private final LanguageService languageService;
     private final FormatService formatService;
 
-    private static final Logger.ALogger LOGGER = Logger.of(MovieServiceImpl.class);
-
     @Inject
-    public MovieServiceImpl(
-            MovieDao movieDao,
-            MovieArtistMapDao movieArtistMapDao,
-            ArtistDao artistDao,
-            MovieIndexService movieIndexService,
-            LanguageService languageService,
-            FormatService formatService
+    public MovieServiceImpl
+    (
+        MovieDao movieDao,
+        MovieArtistMapDao movieArtistMapDao,
+        ArtistDao artistDao,
+        MovieIndexService movieIndexService,
+        LanguageService languageService,
+        FormatService formatService
     )
     {
         this.movieDao = movieDao;

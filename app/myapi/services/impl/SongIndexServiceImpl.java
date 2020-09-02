@@ -20,18 +20,18 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import play.Logger;
+import myapi.utils.Logger;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import play.libs.Json;
 
 /**
  * Created by shreyas.hande on 1/7/18.
  */
 public class SongIndexServiceImpl implements SongIndexService
 {
-    private static final Logger.ALogger LOGGER = Logger.of(SongIndexServiceImpl.class);
     private final ElasticService elasticService;
     private final SongService songService;
 
@@ -50,15 +50,13 @@ public class SongIndexServiceImpl implements SongIndexService
     {
         List<SongSnippet> songs =  songService.getAllSongsFromDB();
         Boolean isCompleteSuccess = true;
-        LOGGER.debug("Reindexing " + songs.size() + " songs");
         Long counter = 1L;
         for(SongSnippet songSnippet : songs)
         {
-            LOGGER.debug("Indexing song " + counter.toString() + "/" + songs.size());
             Boolean isSuccess = indexSong(songSnippet);
             if(!isSuccess)
             {
-                LOGGER.error("[reIndexSongsFromDB] : Failed to index movie. Id : " + songSnippet.id);
+                Logger.error("Failed to index movie. Id : " + songSnippet.id);
             }
             isCompleteSuccess = (isCompleteSuccess && isSuccess);
             counter++;
@@ -95,7 +93,7 @@ public class SongIndexServiceImpl implements SongIndexService
             }
             catch(Exception ex)
             {
-                LOGGER.error("[indexSongAsThread] Error while indexing song", ex);
+                Logger.error("Error while indexing song. Payload: " + Json.toJson(songSnippet) + ". Exception: " + ex);
             }
         });
     }

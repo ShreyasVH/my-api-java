@@ -1,6 +1,6 @@
 package myapi.services.elastic;
 
-import play.Logger;
+import myapi.utils.Logger;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -16,8 +16,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
  */
 public class ElasticService extends ElasticSearch
 {
-    private final Logger.ALogger LOGGER = Logger.of(ElasticService.class);
-
     public ElasticService()
     {
         if(null == client)
@@ -39,7 +37,7 @@ public class ElasticService extends ElasticSearch
             }
             catch(Exception ex)
             {
-                String sh = "sh";
+                Logger.error("Error while setting up elastic client. Exception: " + ex);
             }
         }
     }

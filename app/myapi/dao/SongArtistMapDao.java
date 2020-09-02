@@ -5,18 +5,17 @@ import myapi.models.SongComposerMap;
 import myapi.models.SongLyricistMap;
 import myapi.models.SongSingerMap;
 import myapi.utils.Utils;
-import play.Logger;
+import myapi.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import play.libs.Json;
 
 /**
  * Created by shreyas.hande on 1/12/18.
  */
 public class SongArtistMapDao extends BaseDao
 {
-    private static final Logger.ALogger LOGGER = Logger.of(SongArtistMapDao.class);
-
     @Inject
     public SongArtistMapDao()
     {
@@ -32,7 +31,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getSingerMapsForSong] Error while getting singer maps for song.", ex);
+            Logger.error("Error while getting singer maps by song. id: " + songId + ". Exception: " + ex);
         }
         return singerMaps;
     }
@@ -46,7 +45,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getComposerMapsForSong] Error while getting composer maps for song.", ex);
+            Logger.error("Error while getting composer maps by song. id: " + songId + ". Exception: " + ex);
         }
         return composerMaps;
     }
@@ -60,7 +59,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getLyricisMapsForSong] Error while getting lyricist maps for song.", ex);
+            Logger.error("Error while getting lyricist maps by song. id: " + songId + ". Exception: " + ex);
         }
         return lyricistMaps;
     }
@@ -82,7 +81,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[saveSingersForSong] : Error while saving singers for song.", ex);
+            Logger.error("Error while saving singers for song. id: " + songId + ". Exception: " + ex);
             isCompleteSuccess = false;
         }
         return isCompleteSuccess;
@@ -98,7 +97,7 @@ public class SongArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
-            LOGGER.error("[saveSongSingerMap] : Error saving singer for song.", ex);
+            Logger.error("Error while saving singer maps for song. Payload: " + Json.toJson(songSingerMap) + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -120,7 +119,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[saveComposersForSong] : Error saving composers for song.", ex);
+            Logger.error("Error while saving composers for song. id: " + songId + ". Exception: " + ex);
             isCompleteSuccess = false;
         }
         return isCompleteSuccess;
@@ -137,7 +136,7 @@ public class SongArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
-            LOGGER.error("[saveSongComposerMap] : Error saving composer for song.", ex);
+            Logger.error("Error while saving composer maps for song. Payload: " + Json.toJson(songComposerMap) + ". Exception: " + ex);
         }
 
         return isSuccess;
@@ -161,7 +160,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[saveLyricistsForSong] : Error saving lyricists for song.", ex);
+            Logger.error("Error while saving lyricists for song. id: " + songId + ". Exception: " + ex);
         }
 
         return isCompleteSuccess;
@@ -178,7 +177,7 @@ public class SongArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
-            LOGGER.error("[saveSongLyricistMap] : Error saving lyricist for song.", ex);
+            Logger.error("Error while saving lyricists for song. Payload: " + Json.toJson(songLyricistMap) + ". Exception: " + ex);
         }
 
         return isSuccess;
@@ -198,7 +197,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[removeSingersFromSong] : Error while removing singers for Song - " + songId, ex);
+            Logger.error("Error while removing singers for song. id: " + songId + ". Exception: " + ex);
         }
         return isCompeteSuccess;
     }
@@ -213,7 +212,7 @@ public class SongArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
-            LOGGER.error("[removeSongSingerMap] : Error while deleting songSingerMap.", ex);
+            Logger.error("Error while removing singers for song. Payload: " + Json.toJson(songSingerMap) + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -232,7 +231,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[removeComposersFromSong] : Error while removing composers for Song - " + songId, ex);
+            Logger.error("Error while removing composers for song. id: " + songId + ". Exception: " + ex);
         }
         return isCompeteSuccess;
     }
@@ -247,7 +246,7 @@ public class SongArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
-            LOGGER.error("[removeSongComposerMap] : Error while deleting songComposerMap.", ex);
+            Logger.error("Error while removing composer maps for song. Payload: " + Json.toJson(songComposerMap) + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -266,7 +265,7 @@ public class SongArtistMapDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[removeLyricistsFromSong] : Error while removing lyricists for Song - " + songId, ex);
+            Logger.error("Error while removing lyricists for song. id: " + songId + ". Exception: " + ex);
         }
         return isCompeteSuccess;
     }
@@ -281,7 +280,7 @@ public class SongArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
-            LOGGER.error("[removeSongLyricistMap] : Error while deleting songLyricistMap.", ex);
+            Logger.error("Error while removing lyricist maps for song. Payload: " + Json.toJson(songLyricistMap) + ". Exception: " + ex);
         }
         return isSuccess;
     }
