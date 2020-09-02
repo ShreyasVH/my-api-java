@@ -2,7 +2,7 @@ package myapi.dao;
 
 import com.google.inject.Inject;
 import myapi.models.Language;
-import play.Logger;
+import myapi.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,6 @@ import java.util.List;
  */
 public class LanguageDao extends BaseDao
 {
-    private final Logger.ALogger LOGGER = Logger.of(LanguageDao.class);
-
     @Inject
     public LanguageDao()
     {
@@ -29,7 +27,7 @@ public class LanguageDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getAllLanguages] Error while fetching all languages", ex);
+            Logger.error("Error while getting all languages. Exception: " + ex);
         }
         return languages;
     }
@@ -43,7 +41,7 @@ public class LanguageDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getLanguageById] Error while fetching language by id", ex);
+            Logger.error("Error while getting language by id. id: " + languageId + ". Exception: " + ex);
         }
         return language;
     }
@@ -57,7 +55,7 @@ public class LanguageDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getLanguageByName] Error while fetching language by name", ex);
+            Logger.error("Error while getting language by name. name: " + name + ". Exception: " + ex);
         }
         return language;
     }

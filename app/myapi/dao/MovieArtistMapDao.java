@@ -4,18 +4,17 @@ import com.google.inject.Inject;
 import myapi.models.MovieActorMap;
 import myapi.models.MovieDirectorMap;
 import myapi.utils.Utils;
-import play.Logger;
+import myapi.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import play.libs.Json;
 
 /**
  * Created by shreyas.hande on 12/6/17.
  */
 public class MovieArtistMapDao extends BaseDao
 {
-    private static final Logger.ALogger LOGGER = Logger.of(MovieArtistMapDao.class);
-
     @Inject
     public MovieArtistMapDao()
     {
@@ -31,7 +30,7 @@ public class MovieArtistMapDao extends BaseDao
         }
         catch (Exception ex)
         {
-
+            Logger.error("Error while getting actor maps for movie by id. id: " + movieId + ". Exception: " + ex);
         }
         return actorMaps;
     }
@@ -45,7 +44,7 @@ public class MovieArtistMapDao extends BaseDao
         }
         catch (Exception ex)
         {
-            myapi.utils.Logger.error("Error while getting movies for actor. id: " + actorId + ". Exception: " + ex);
+            Logger.error("Error while getting movies for actor. id: " + actorId + ". Exception: " + ex);
         }
         return actorMaps;
     }
@@ -59,7 +58,7 @@ public class MovieArtistMapDao extends BaseDao
         }
         catch (Exception ex)
         {
-
+            Logger.error("Error while getting director maps by movie. id: " + movieId + ". Exception: " + ex);
         }
         return directorMaps;
     }
@@ -73,7 +72,7 @@ public class MovieArtistMapDao extends BaseDao
         }
         catch (Exception ex)
         {
-            myapi.utils.Logger.error("Error while getting movies for director. id: " + directorId + ". Exception: " + ex);
+            Logger.error("Error while getting movies for director. id: " + directorId + ". Exception: " + ex);
         }
         return directorMaps;
     }
@@ -103,6 +102,7 @@ public class MovieArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
+            Logger.error("Error while saving movie actor maps. payload: " + Json.toJson(map) + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -117,6 +117,7 @@ public class MovieArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
+            Logger.error("Error while removing movie actor map. payload: " + Json.toJson(map) + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -136,6 +137,7 @@ public class MovieArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
+            Logger.error("Error while removing actor maps for movie. id: " + movieId + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -165,6 +167,7 @@ public class MovieArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
+            Logger.error("Error while saving director map. payload: " + Json.toJson(map) + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -179,6 +182,7 @@ public class MovieArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
+            Logger.error("Error while removing director map. payload: " + Json.toJson(map) + ". Exception: " + ex);
         }
         return isSuccess;
     }
@@ -198,6 +202,7 @@ public class MovieArtistMapDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
+            Logger.error("Error while removing directopr maps from movie. id: " + movieId + ". Exception: " + ex);
         }
         return isSuccess;
     }

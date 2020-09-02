@@ -2,6 +2,7 @@ package myapi.dao;
 
 import com.google.inject.Inject;
 import myapi.models.MovieFormat;
+import myapi.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class FormatDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting all formats. Exception: " + ex);
         }
         return formats;
     }
@@ -40,7 +41,7 @@ public class FormatDao extends BaseDao
        }
        catch(Exception ex)
        {
-
+           Logger.error("Error while getting format by id. id: " + formatId + ". Exception: " + ex);
        }
        return format;
     }
@@ -54,7 +55,7 @@ public class FormatDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting format by name. name: " + name + ". Exception: " + ex);
         }
         return format;
     }

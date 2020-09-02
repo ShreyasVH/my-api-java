@@ -4,18 +4,17 @@ import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import com.google.inject.Inject;
 import myapi.models.Movie;
-import play.Logger;
+import myapi.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import play.libs.Json;
 
 /**
  * Created by shreyas.hande on 12/6/17.
  */
 public class MovieDao extends BaseDao
 {
-    private final Logger.ALogger LOGGER = Logger.of(MovieDao.class);
-
     @Inject
     public MovieDao()
     {
@@ -31,7 +30,7 @@ public class MovieDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting all movies. Exception: " + ex);
         }
         return movies;
     }
@@ -45,7 +44,7 @@ public class MovieDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting movie by id. id: " + id + ". Exception: " + ex);
         }
         return movie;
     }
@@ -60,14 +59,13 @@ public class MovieDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.info("Error saving movie. Movie Object : " + movie.toString(), ex);
+            Logger.error("Error while saving movie. payload: " + Json.toJson(movie) + ". Exception: " + ex);
         }
         return isSuccess;
     }
 
     public List<Movie> getMoviesWithActorCombination(List<String> actorIds)
     {
-        LOGGER.info("getting actor combinations");
         List<Movie> movies = new ArrayList<>();
         Integer size = actorIds.size();
         Integer i;
@@ -89,7 +87,7 @@ public class MovieDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting movie actor combinations. actorsIds: " + Json.toJson(actorIds) + ". Exception: " + ex);
         }
         return movies;
     }
@@ -105,7 +103,7 @@ public class MovieDao extends BaseDao
         }
         catch(Exception ex)
         {
-
+            Logger.error("Error while getting all years. Exception: " + ex);
         }
         return years;
     }
@@ -121,7 +119,7 @@ public class MovieDao extends BaseDao
         }
         catch(Exception ex)
         {
-            String sh = "sh";
+            Logger.error("Error while getting movie dashboard. Exception: " + ex);
         }
         return dbList;
     }

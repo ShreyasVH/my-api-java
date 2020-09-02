@@ -4,18 +4,17 @@ import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import com.google.inject.Inject;
 import myapi.models.Song;
-import play.Logger;
+import myapi.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import play.libs.Json;
 
 /**
  * Created by shreyas.hande on 1/7/18.
  */
 public class SongDao extends BaseDao
 {
-    private final Logger.ALogger LOGGER = Logger.of(SongDao.class);
-
     @Inject
     public SongDao()
     {
@@ -33,7 +32,7 @@ public class SongDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[dashboard] Error : ", ex);
+            Logger.error("Error while getting songs dashboard. Exception: " + ex);
         }
         return dashboard;
     }
@@ -47,7 +46,7 @@ public class SongDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getSongById] Error : ", ex);
+            Logger.error("Error while getting song by id. id: " + id + ". Exception: " + ex);
         }
         return song;
     }
@@ -61,7 +60,7 @@ public class SongDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getAllSongs] Error : ", ex);
+            Logger.error("Error while getting all songs. Exception: " + ex);
         }
 
         return songs;
@@ -78,7 +77,7 @@ public class SongDao extends BaseDao
         }
         catch(Exception ex)
         {
-            LOGGER.error("[getAllYears] : Error getting all years.", ex);
+            Logger.error("Error while getting all years for song. Exception: " + ex);
         }
         return years;
     }
@@ -94,7 +93,7 @@ public class SongDao extends BaseDao
         catch(Exception ex)
         {
             isSuccess = false;
-            LOGGER.error("[saveSong] : Error while saving song.", ex);
+            Logger.error("Error while saving song. Payload: " + Json.toJson(song) + ". Exception: " + ex);
         }
 
         return isSuccess;

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import myapi.models.ErrorResponse;
 import myapi.models.GenericResponse;
 import myapi.models.ResponseType;
-import play.Logger;
+import myapi.utils.Logger;
 import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Results;
@@ -20,8 +20,6 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response
 {
-    private static final Logger.ALogger LOGGER = Logger.of(Response.class);
-
     /**
      * @param object
      * @return
@@ -75,7 +73,7 @@ public class Response
             return Results.status(400, e.getMessage());
         }
         else {
-            LOGGER.error("Internal Server Error Occurred while processing the request ", e);
+            Logger.error("Internal Server Error Occurred while processing the request. Exception: " + e);
             return Results.status(500, "Internal Server Error Occurred while processing the request");
         }
     }
