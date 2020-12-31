@@ -44,6 +44,8 @@ GET     /songs/years                                    @myapi.controllers.Songs
 POST    /songs/song                                     @myapi.controllers.SongsController.addSong()
 PUT     /songs/song                                     @myapi.controllers.SongsController.editSong()
 
+POST    /songs/index/id/:id                             @myapi.controllers.SongsController.indexSong(id : String)
+
 GET     /test/notFound                                  myapi.controllers.TestController.notFoundA()
 GET     /test/notFoundHTML                              myapi.controllers.TestController.notFoundHTML()
 GET     /test/redirect                                  myapi.controllers.TestController.redirectPage()

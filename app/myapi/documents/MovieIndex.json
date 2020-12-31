@@ -166,8 +166,8 @@
               "digit"
             ],
             "min_gram": "2",
-            "type": "ngram",
-            "max_gram": "10"
+            "max_gram": "10",
+            "type": "ngram"
           }
         }
       },

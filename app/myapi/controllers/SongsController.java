@@ -139,4 +139,12 @@ public class SongsController extends BaseController
             }
         });
     }
+
+    public F.Promise<Result> indexSong(String id)
+    {
+        return F.Promise.promise(() -> {
+            GenericResponse response = songService.indexSong(id);
+            return ok(Json.toJson(response));
+        });
+    }
 }

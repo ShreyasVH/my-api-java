@@ -21,6 +21,8 @@ public interface SongService
 
     SongSnippet getSongById(String id) throws MyException;
 
+    Song getSongFromDB(String id) throws MyException;
+
     List<SongSnippet> getAllSongsFromDB() throws MyException;
 
     GenericResponse reIndexSongsFromDB() throws MyException;
@@ -38,4 +40,6 @@ public interface SongService
     SongSnippet createSong(SongRequest request) throws Exception;
 
     SongSnippet editSong(SongRequest request) throws Exception;
+
+    GenericResponse indexSong(String id) throws MyException;
 }

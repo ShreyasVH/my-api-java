@@ -97,6 +97,16 @@ public class SongServiceImpl implements SongService
         return songIndexService.getSongById(id);
     }
 
+    public Song getSongFromDB(String id) throws MyException
+    {
+        Song song = songDao.getSongById(id);
+        if(null == song)
+        {
+            throw new NotFoundException(ValidationResponse.SONG_NOT_FOUND);
+        }
+        return song;
+    }
+
     @Override
     public List<SongSnippet> getAllSongsFromDB() throws MyException
     {
@@ -226,5 +236,24 @@ public class SongServiceImpl implements SongService
             songIndexService.indexSongAsThread(songSnippet, true);
         }
         return songSnippet;
+    }
+
+    public GenericResponse indexSong(String id) throws MyException
+    {
+        Boolean isSuccess = songIndexService.indexSong(id);
+        GenericResponse response = new GenericResponse();
+        if(isSuccess)
+        {
+            response.setType(ResponseType.SUCCESS);
+            response.setDescription(SuccessResponse.UPDATE_SUCCESS.getDescription());
+            response.setCode(SuccessResponse.UPDATE_SUCCESS.getCode());
+        }
+        else
+        {
+            response.setType(ResponseType.ERROR);
+            response.setCode(ErrorResponse.API_FAILED.getCode());
+            response.setDescription(ErrorResponse.API_FAILED.getDescription());
+        }
+        return response;
     }
 }

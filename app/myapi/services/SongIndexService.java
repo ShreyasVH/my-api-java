@@ -14,6 +14,8 @@ public interface SongIndexService
 {
     Boolean reIndexSongsFromDB() throws MyException;
 
+    Boolean indexSong(String id) throws MyException;
+
     Boolean indexSong(SongSnippet songSnippet);
 
     Boolean indexSong(SongSnippet songSnippet, Boolean isUpdateRequired);

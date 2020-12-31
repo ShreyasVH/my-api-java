@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import myapi.constants.Constants;
 import myapi.exceptions.MyException;
 import myapi.exceptions.NotFoundException;
+import myapi.models.Song;
 import myapi.models.SongAttribute;
 import myapi.models.ValidationResponse;
 import myapi.services.SongIndexService;
@@ -63,6 +64,14 @@ public class SongIndexServiceImpl implements SongIndexService
         }
 
         return isCompleteSuccess;
+    }
+
+    @Override
+    public Boolean indexSong(String id) throws MyException
+    {
+        Song song = songService.getSongFromDB(id);
+        SongSnippet songSnippet = songService.songSnippet(song);
+        return indexSong(songSnippet);
     }
 
     @Override
@@ -157,7 +166,7 @@ public class SongIndexServiceImpl implements SongIndexService
             SongAttribute songAttribute = SongAttribute.getSongAttributeByName(key);
             if(null != songAttribute)
             {
-                String sortKey = (key + ".sort");
+                String sortKey = (((Constants.FIELD_TYPE_NESTED.equals(songAttribute.getType())) ? songAttribute.getNestedTerm() : key) + ".sort");
                 builder.sort(sortKey, order);
             }
         }
