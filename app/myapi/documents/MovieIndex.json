@@ -3,18 +3,16 @@
   "mappings": {
     "properties": {
       "actors": {
-        "type": "nested",
-        "properties": {
-          "gender": {
-            "type": "keyword"
-          },
-          "id": {
-            "type": "keyword"
-          },
-          "name": {
-            "type": "keyword"
-          }
-        }
+        "type": "keyword"
+      },
+      "actorNames": {
+        "type": "keyword"
+      },
+      "actorGenders": {
+        "type": "keyword"
+      },
+      "actorImageUrls": {
+        "type": "keyword"
       },
       "basename": {
         "type": "keyword",
@@ -25,34 +23,27 @@
         }
       },
       "directors": {
-        "type": "nested",
-        "properties": {
-          "gender": {
-            "type": "keyword"
-          },
-          "id": {
-            "type": "keyword"
-          },
-          "name": {
-            "type": "keyword"
+        "type": "keyword"
+      },
+      "directorNames": {
+        "type": "keyword"
+      },
+      "directorGenders": {
+        "type": "keyword"
+      },
+      "directorImageUrls": {
+        "type": "keyword"
+      },
+      "format": {
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
           }
         }
       },
-      "format": {
-        "type": "nested",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "fields": {
-              "sort": {
-                "type": "integer"
-              }
-            }
-          },
-          "name": {
-            "type": "keyword"
-          }
-        }
+      "formatName": {
+        "type": "keyword"
       },
       "id": {
         "type": "long",
@@ -66,20 +57,15 @@
         "type": "text"
       },
       "language": {
-        "type": "nested",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "fields": {
-              "sort": {
-                "type": "integer"
-              }
-            }
-          },
-          "name": {
-            "type": "keyword"
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
           }
         }
+      },
+      "languageName": {
+        "type": "keyword"
       },
       "name": {
         "type": "text",

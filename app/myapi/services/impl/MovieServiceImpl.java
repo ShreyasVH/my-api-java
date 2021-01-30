@@ -24,6 +24,7 @@ import myapi.skeletons.responses.MovieSnippet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by shreyas.hande on 12/10/17.
@@ -75,31 +76,53 @@ public class MovieServiceImpl implements MovieService {
         MovieSnippet movieSnippet = new MovieSnippet(movie);
         List<MovieActorMap> actorMaps = movieArtistMapDao.getActorMapsForMovie(movie.getId());
         List<MovieDirectorMap> directorMaps = movieArtistMapDao.getDirectorMapsForMovie(movie.getId());
-        List<Artist> actors = new ArrayList<>();
-        List<Artist> directors = new ArrayList<>();
+        List<String> actorIds = new ArrayList<>();
+        List<String> actorNames = new ArrayList<>();
+        List<String> actorGenders = new ArrayList<>();
+        List<String> actorImageUrls = new ArrayList<>();
+        List<String> directorIds = new ArrayList<>();
+        List<String> directorNames = new ArrayList<>();
+        List<String> directorGenders = new ArrayList<>();
+        List<String> directorImageUrls = new ArrayList<>();
         for(MovieActorMap map : actorMaps)
         {
             Artist actor = artistDao.getArtistById(map.getActorId());
             if(null != actor)
             {
-                actors.add(actor);
+                actorIds.add(actor.getId());
+                actorNames.add(actor.getName());
+                actorGenders.add(actor.getGender());
+                actorImageUrls.add(actor.getImageUrl());
             }
         }
-        movieSnippet.setActors(actors);
+        movieSnippet.setActors(actorIds);
+        movieSnippet.setActorNames(actorNames);
+        movieSnippet.setActorGenders(actorGenders);
+        movieSnippet.setActorImageUrls(actorImageUrls);
 
         for(MovieDirectorMap map : directorMaps)
         {
             Artist director = artistDao.getArtistById(map.getDirectorId());
             if(null != director)
             {
-                directors.add(director);
+                directorIds.add(director.getId());
+                directorNames.add(director.getName());
+                directorGenders.add(director.getGender());
+                directorImageUrls.add(director.getImageUrl());
             }
         }
-        movieSnippet.setDirectors(directors);
+        movieSnippet.setDirectors(directorIds);
+        movieSnippet.setDirectorNames(directorNames);
+        movieSnippet.setDirectorGenders(directorGenders);
+        movieSnippet.setDirectorImageUrls(directorImageUrls);
 
-        movieSnippet.setLanguage(languageService.getLanguageById(movie.getLanguageId()));
+        Language language = languageService.getLanguageById(movie.getLanguageId());
+        movieSnippet.setLanguage(language.getId());
+        movieSnippet.setLanguageName(language.getName());
 
-        movieSnippet.setFormat(formatService.getFormatById(movie.getFormatId()));
+        MovieFormat format = formatService.getFormatById(movie.getFormatId());
+        movieSnippet.setFormat(format.getId());
+        movieSnippet.setFormatName(format.getName());
 
         return movieSnippet;
     }

@@ -10,16 +10,16 @@ public enum MovieAttribute
 {
     ID("id", Constants.FIELD_TYPE_NORMAL),
     NAME("name", Constants.FIELD_TYPE_NORMAL),
-    LANGUAGE("language", Constants.FIELD_TYPE_NESTED, "language.id", "language"),
+    LANGUAGE("language", Constants.FIELD_TYPE_NORMAL),
     SIZE("size", Constants.FIELD_TYPE_RANGE),
-    FORMAT("format", Constants.FIELD_TYPE_NESTED, "format.id", "format"),
+    FORMAT("format", Constants.FIELD_TYPE_NORMAL),
     QUALITY("quality", Constants.FIELD_TYPE_NORMAL),
     YEAR("year", Constants.FIELD_TYPE_RANGE),
     SUBTITLES("subtitles", Constants.FIELD_TYPE_NORMAL),
     SEEN("seen_in_theatre", Constants.FIELD_TYPE_NORMAL),
     BASENAME("basename", Constants.FIELD_TYPE_NORMAL),
-    ACTORS("actors", Constants.FIELD_TYPE_NESTED, "actors.id", "actors"),
-    DIRECTORS("directors", Constants.FIELD_TYPE_NESTED, "directors.id", "directors"),
+    ACTORS("actors", Constants.FIELD_TYPE_NORMAL),
+    DIRECTORS("directors", Constants.FIELD_TYPE_NORMAL),
     STATUS("status", Constants.FIELD_TYPE_NORMAL);
 
     @Getter

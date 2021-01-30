@@ -175,8 +175,8 @@ public class MovieIndexServiceImpl implements MovieIndexService {
         BoolQueryBuilder finalQuery = QueryBuilders.boolQuery();
         for(String actorId : actorIds)
         {
-            QueryBuilder nestedQuery = QueryBuilders.nestedQuery(MovieAttribute.ACTORS.getNestedLevel(), QueryBuilders.termQuery(MovieAttribute.ACTORS.getNestedTerm(), actorId), ScoreMode.Min);
-            finalQuery.must(nestedQuery);
+            QueryBuilder query = QueryBuilders.termQuery(MovieAttribute.ACTORS.getFieldName(), actorId);
+            finalQuery.must(query);
         }
         finalQuery.mustNot(QueryBuilders.termQuery(MovieAttribute.STATUS.getFieldName(), Status.DELETED.toString()));
 
