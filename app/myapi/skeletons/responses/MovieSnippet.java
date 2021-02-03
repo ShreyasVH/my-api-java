@@ -23,11 +23,13 @@ public class MovieSnippet
 
     public String name;
 
-    public Language language;
+    public Long language;
+    public String languageName;
 
     public Long size;
 
-    public MovieFormat format;
+    public Long format;
+    public String formatName;
 
     public String quality;
 
@@ -39,9 +41,15 @@ public class MovieSnippet
 
     public String basename;
 
-    public List<Artist> actors;
+    public List<String> actors;
+    public List<String> actorNames;
+    public List<String> actorGenders;
+    public List<String> actorImageUrls;
 
-    public List<Artist> directors;
+    public List<String> directors;
+    public List<String> directorNames;
+    public List<String> directorGenders;
+    public List<String> directorImageUrls;
 
     public Status status;
 
