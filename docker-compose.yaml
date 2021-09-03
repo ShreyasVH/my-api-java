@@ -1,0 +1,25 @@
+version: '3'
+services:
+  app:
+    build: ./
+    ports:
+      - "8021:8021"
+      - "9021:9021"
+      - "10021:10021"
+    expose:
+      - 8021
+      - 9021
+      - 10021
+    volumes:
+      - ./:/app
+      - /app/target
+      - app/project/target
+      - app/project/project
+    container_name: my-api-java
+    stdin_open: true
+    tty: true
+
+networks:
+  default:
+    external:
+      name: local
