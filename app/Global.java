@@ -31,7 +31,9 @@ public class Global extends GlobalSettings
         {
             F.Promise<Result> result = this.delegate.call(ctx);
             Http.Response response = ctx.response();
+            response.setHeader("Access-Control-Allow-Origin", "https://my-site-react.herokuapp.com");
             response.setHeader("Access-Control-Allow-Origin", "http://my-site-react.herokuapp.com");
+            response.setHeader("Access-Control-Allow-Origin", "http://host.docker.internal:3000");
             return result;
         }
     }
