@@ -13,13 +13,10 @@ services:
     volumes:
       - ./:/app
       - /app/target
-      - app/project/target
-      - app/project/project
+      - /app/project/target
+      - /app/project/project
     container_name: my-api-java
     stdin_open: true
     tty: true
-
-networks:
-  default:
-    external:
-      name: local
+    env_file:
+      - ./.env
