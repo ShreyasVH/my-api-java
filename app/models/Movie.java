@@ -55,8 +55,8 @@ public class Movie extends Model
 	@Column(name = "basename")
 	public String basename;
 
-	@Column(name = "status")
-	public Status status = Status.ENABLED;
+	@Column(name = "active")
+	public Boolean active;
 
 	@Column(name = "image_url")
 	private String imageUrl;
@@ -73,7 +73,7 @@ public class Movie extends Model
 		this.subtitles = movie.getBoolean("subtitles");
 		this.seenInTheatre = movie.getBoolean("seen_in_theatre");
 		this.basename = movie.getString("basename");
-		this.status = Status.getStatus(movie.getInteger("status"));
+		this.active = movie.getBoolean("active");
 		this.imageUrl = movie.getString("image_url");
 	}
 }
