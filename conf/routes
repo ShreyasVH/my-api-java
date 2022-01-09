@@ -1,1 +1,2 @@
 GET     /movies/dashboard                               controllers.MoviesController.dashboard()
+POST    /movies/filter                                  controllers.MoviesController.filter(request: Request)
