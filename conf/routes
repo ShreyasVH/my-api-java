@@ -6,3 +6,5 @@ GET     /artists/:id                                    controllers.ArtistsContr
 PUT     /artists/:id                                    controllers.ArtistsController.update(id: String, request: Request)
 
 GET     /languages                                      controllers.LanguageController.getAll
+
+GET     /formats                                        controllers.FormatController.getAll
