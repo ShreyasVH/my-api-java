@@ -23,4 +23,13 @@ public class Utils
     {
         return new Date();
     }
+
+    public static String generateUniqueIdByParam(String type)
+    {
+        Date currentDate = new Date();
+        Long currentTimeStamp = currentDate.getTime();
+        String hexString = Long.toHexString(currentTimeStamp * 1000);
+
+        return (type + hexString);
+    }
 }

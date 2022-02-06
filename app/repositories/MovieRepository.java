@@ -6,7 +6,6 @@ import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import io.ebean.SqlQuery;
 import io.ebean.SqlRow;
-import models.Movie;
 import play.db.ebean.EbeanConfig;
 
 import java.util.ArrayList;
