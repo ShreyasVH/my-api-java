@@ -25,40 +25,40 @@ import javax.persistence.Table;
 public class Movie extends Model
 {
 	@Id
-	@Column(name = "id")
-	public Long id;
+	@Column
+	private Long id;
 
-	@Column(name = "name")
-	public String name;
+	@Column
+	private String name;
 
-	@Column(name = "language_id")
-	public Long languageId;
+	@Column
+	private Long languageId;
 
-	@Column(name = "size")
-	public Long size;
+	@Column
+	private Long size;
 
-	@Column(name = "format_id")
-	public Long formatId;
+	@Column
+	private Long formatId;
 
-	@Column(name = "quality")
-	public String quality;
+	@Column
+	private String quality;
 
-	@Column(name = "year")
-	public Integer year;
+	@Column
+	private Integer year;
 
-	@Column(name = "subtitles")
-	public Boolean subtitles;
+	@Column
+	private Boolean subtitles;
 
-	@Column(name = "seen_in_theatre")
-	public Boolean seenInTheatre;
+	@Column
+	private Boolean seenInTheatre;
 
-	@Column(name = "basename")
-	public String basename;
+	@Column
+	private String basename;
 
-	@Column(name = "active")
-	public Boolean active;
+	@Column
+	private Boolean active;
 
-	@Column(name = "image_url")
+	@Column
 	private String imageUrl;
 
 	public Movie(SqlRow movie)

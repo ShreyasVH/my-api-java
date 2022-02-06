@@ -3,6 +3,7 @@ package services;
 import io.ebean.SqlRow;
 import requests.FilterRequest;
 import responses.FilterResponse;
+import responses.MovieResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -15,4 +16,6 @@ public interface MovieService
     List<SqlRow> getDashboard();
 
     FilterResponse<Map<String, Object>> filter(FilterRequest filterRequest);
+
+    MovieResponse get(Long id);
 }

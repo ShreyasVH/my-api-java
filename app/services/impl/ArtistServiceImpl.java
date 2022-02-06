@@ -13,6 +13,8 @@ import requests.ArtistRequest;
 import services.ArtistService;
 import utils.Utils;
 
+import java.util.List;
+
 /**
  * Created by shreyas.hande on 12/11/17.
  */
@@ -58,6 +60,12 @@ public class ArtistServiceImpl implements ArtistService
         }
 
         return artist;
+    }
+
+    @Override
+    public List<Artist> get(List<String> ids)
+    {
+        return this.artistRepository.get(ids);
     }
 
     @Override

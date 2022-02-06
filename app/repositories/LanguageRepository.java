@@ -46,4 +46,19 @@ public class LanguageRepository
         }
         return languages;
     }
+
+    public Language get(Long id)
+    {
+        Language language = null;
+        try
+        {
+            language = db.find(Language.class).where().eq("id", id).findOne();
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return language;
+    }
 }

@@ -34,16 +34,31 @@ public class FormatRepository
 
     public List<Format> getAll()
     {
-        List<Format> forms = new ArrayList<>();
+        List<Format> formats = new ArrayList<>();
         try
         {
-            forms = db.find(Format.class).orderBy("id ASC").findList();
+            formats = db.find(Format.class).orderBy("id ASC").findList();
         }
         catch(Exception ex)
         {
             String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
             throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
         }
-        return forms;
+        return formats;
+    }
+
+    public Format get(Long id)
+    {
+        Format format = null;
+        try
+        {
+            format = db.find(Format.class).where().eq("id", id).findOne();
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return format;
     }
 }

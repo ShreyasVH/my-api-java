@@ -7,4 +7,6 @@ import java.util.List;
 public interface FormatService
 {
     List<Format> getAll();
+
+    Format get(Long id);
 }

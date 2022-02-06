@@ -10,6 +10,9 @@ import modules.DatabaseExecutionContext;
 import play.db.ebean.EbeanConfig;
 import play.db.ebean.EbeanDynamicEvolutions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by shreyas.hande on 12/6/17.
  */
@@ -59,6 +62,21 @@ public class ArtistRepository
             throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
         }
         return artist;
+    }
+
+    public List<Artist> get(List<String> ids)
+    {
+        List<Artist> artists = new ArrayList<>();
+        try
+        {
+            artists = db.find(Artist.class).where().in("id", ids).findList();
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return artists;
     }
 
     public Artist get(String id)

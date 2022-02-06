@@ -57,4 +57,11 @@ public class MoviesController extends BaseController
             return this.movieService.filter(filterRequest);
         }, this.httpExecutionContext.current()).thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
     }
+
+    public CompletionStage<Result> get(Long id)
+    {
+        return CompletableFuture
+                .supplyAsync(() -> movieService.get(id), this.httpExecutionContext.current())
+                .thenApplyAsync(movie -> ok(Json.toJson(movie)), this.httpExecutionContext.current());
+    }
 }

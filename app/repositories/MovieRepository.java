@@ -6,6 +6,9 @@ import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import io.ebean.SqlQuery;
 import io.ebean.SqlRow;
+import models.Movie;
+import models.MovieActorMap;
+import models.MovieDirectorMap;
 import play.db.ebean.EbeanConfig;
 
 import java.util.ArrayList;
@@ -228,5 +231,53 @@ public class MovieRepository
 		}
 
 		return fieldName;
+	}
+
+	public Movie get(Long id)
+	{
+		Movie movie = null;
+
+		try
+		{
+			movie = this.db.find(Movie.class).where().eq("id", id).eq("active", true).findOne();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+		return movie;
+	}
+
+	public List<MovieActorMap> getActorMaps(Long movieId)
+	{
+		List<MovieActorMap> actorMaps = new ArrayList<>();
+
+		try
+		{
+			actorMaps = this.db.find(MovieActorMap.class).where().eq("movieId", movieId).findList();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+		return actorMaps;
+	}
+
+	public List<MovieDirectorMap> getDirectorMaps(Long movieId)
+	{
+		List<MovieDirectorMap> directorMaps = new ArrayList<>();
+
+		try
+		{
+			directorMaps = this.db.find(MovieDirectorMap.class).where().eq("movieId", movieId).findList();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+		return directorMaps;
 	}
 }
