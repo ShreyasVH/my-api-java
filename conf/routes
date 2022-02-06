@@ -4,3 +4,5 @@ POST    /movies/filter                                  controllers.MoviesContro
 POST    /artists                                        controllers.ArtistsController.addArtist(request: Request)
 GET     /artists/:id                                    controllers.ArtistsController.get(id: String)
 PUT     /artists/:id                                    controllers.ArtistsController.update(id: String, request: Request)
+
+GET     /languages                                      controllers.LanguageController.getAll
