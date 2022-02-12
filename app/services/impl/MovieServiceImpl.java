@@ -1,10 +1,13 @@
 package services.impl;
 
 import enums.ErrorCode;
+import exceptions.BadRequestException;
 import exceptions.ConflictException;
 import exceptions.NotFoundException;
+import io.ebean.Ebean;
 import io.ebean.SqlRow;
 import com.google.inject.Inject;
+import io.ebean.Transaction;
 import models.*;
 import org.springframework.util.StringUtils;
 import repositories.MovieRepository;
@@ -285,5 +288,77 @@ public class MovieServiceImpl implements MovieService {
         }
 
         return movieResponse(existingMovie, null, null);
+    }
+
+    @Override
+    public MovieResponse add(MovieRequest request)
+    {
+        request.validate();
+
+        Movie existingMovie = this.movieRepository.get(request.getName(), request.getLanguageId(), request.getYear());
+        if(null != existingMovie)
+        {
+            throw new ConflictException("Movie");
+        }
+
+        Movie movie = new Movie(request);
+        movie.setActive(true);
+
+        Transaction transaction = Ebean.beginTransaction();
+        try
+        {
+            Language language = this.languageService.get(request.getLanguageId());
+            if(null == language)
+            {
+                throw new NotFoundException("Language");
+            }
+
+            Format format = this.formatService.get(request.getFormatId());
+            if(null == format)
+            {
+                throw new NotFoundException("Format");
+            }
+
+            movie = this.movieRepository.save(movie);
+
+            List<Artist> actors = this.artistService.get(request.getActors());
+            if(actors.size() != request.getActors().size())
+            {
+                throw new NotFoundException("Actor");
+            }
+            Movie finalMovie = movie;
+            this.movieRepository.saveActorMaps(request.getActors().stream().map(actorId -> {
+                MovieActorMap actorMap = new MovieActorMap();
+                actorMap.setId(Utils.generateUniqueIdByParam("ma"));
+                actorMap.setMovieId(finalMovie.getId());
+                actorMap.setActorId(actorId);
+
+                return actorMap;
+            }).collect(Collectors.toList()));
+
+            List<Artist> directors = this.artistService.get(request.getDirectors());
+            if(directors.size() != request.getDirectors().size())
+            {
+                throw new NotFoundException("Director");
+            }
+            this.movieRepository.saveDirectorMaps(request.getDirectors().stream().map(directorId -> {
+                MovieDirectorMap directorMap = new MovieDirectorMap();
+                directorMap.setId(Utils.generateUniqueIdByParam("md"));
+                directorMap.setMovieId(finalMovie.getId());
+                directorMap.setDirectorId(directorId);
+
+                return directorMap;
+            }).collect(Collectors.toList()));
+
+            transaction.commit();
+        }
+        catch(Exception ex)
+        {
+            transaction.rollback();
+            transaction.end();
+            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+        }
+
+        return movieResponse(movie, null, null);
     }
 }

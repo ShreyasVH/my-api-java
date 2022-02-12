@@ -22,4 +22,6 @@ public interface MovieService
     MovieResponse get(Long id);
 
     MovieResponse update(Long id, MovieRequest request);
+
+    MovieResponse add(MovieRequest request);
 }

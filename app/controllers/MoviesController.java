@@ -83,4 +83,21 @@ public class MoviesController extends BaseController
             return this.movieService.update(id, movieRequest);
         }, this.httpExecutionContext.current()).thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
     }
+
+    public CompletionStage<Result> add(Http.Request request)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            MovieRequest movieRequest = null;
+            try
+            {
+                movieRequest = Utils.convertObject(request.body().asJson(), MovieRequest.class);
+            }
+            catch(Exception ex)
+            {
+                throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+            }
+
+            return this.movieService.add(movieRequest);
+        }, this.httpExecutionContext.current()).thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
+    }
 }

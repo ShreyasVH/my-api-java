@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import io.ebean.Model;
+import requests.MovieRequest;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -75,5 +76,19 @@ public class Movie extends Model
 		this.basename = movie.getString("basename");
 		this.active = movie.getBoolean("active");
 		this.imageUrl = movie.getString("image_url");
+	}
+
+	public Movie(MovieRequest request)
+	{
+		this.name = request.getName();
+		this.size = request.getSize();
+		this.languageId = request.getLanguageId();
+		this.formatId = request.getFormatId();
+		this.subtitles = request.getSubtitles();
+		this.seenInTheatre = request.getSeenInTheatre();
+		this.quality = request.getQuality();
+		this.year = request.getYear();
+		this.basename = request.getBasename();
+		this.imageUrl = request.getImageUrl();
 	}
 }
