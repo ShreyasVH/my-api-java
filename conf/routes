@@ -1,8 +1,10 @@
 GET     /movies/dashboard                               controllers.MoviesController.dashboard()
 POST    /movies/filter                                  controllers.MoviesController.filter(request: Request)
 GET     /movies/:id                                     controllers.MoviesController.get(id: Long)
+PUT     /movies/:id                                     controllers.MoviesController.update(id: Long, requst: Request)
 
 POST    /artists                                        controllers.ArtistsController.addArtist(request: Request)
+GET     /artists/:offset/:count                         controllers.ArtistsController.getAll(offset: Integer, count: Integer)
 GET     /artists/:id                                    controllers.ArtistsController.get(id: String)
 PUT     /artists/:id                                    controllers.ArtistsController.update(id: String, request: Request)
 

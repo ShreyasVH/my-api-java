@@ -1,7 +1,9 @@
 package services;
 
 import io.ebean.SqlRow;
+import models.Movie;
 import requests.FilterRequest;
+import requests.MovieRequest;
 import responses.FilterResponse;
 import responses.MovieResponse;
 
@@ -18,4 +20,6 @@ public interface MovieService
     FilterResponse<Map<String, Object>> filter(FilterRequest filterRequest);
 
     MovieResponse get(Long id);
+
+    MovieResponse update(Long id, MovieRequest request);
 }

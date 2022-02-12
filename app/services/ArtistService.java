@@ -3,6 +3,7 @@ package services;
 import exceptions.MyException;
 import models.Artist;
 import requests.ArtistRequest;
+import responses.FilterResponse;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface ArtistService
     List<Artist> get(List<String> ids);
 
     Artist update(String id, ArtistRequest artistRequest);
+
+    FilterResponse<Artist> get(int offset, int count);
 }

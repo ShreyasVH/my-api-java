@@ -3,8 +3,10 @@ package controllers;
 import com.google.inject.Inject;
 import enums.ErrorCode;
 import exceptions.BadRequestException;
+import models.Movie;
 import play.mvc.Http;
 import requests.FilterRequest;
+import requests.MovieRequest;
 import services.MovieService;
 import play.libs.concurrent.HttpExecutionContext;
 import play.libs.Json;
@@ -63,5 +65,22 @@ public class MoviesController extends BaseController
         return CompletableFuture
                 .supplyAsync(() -> movieService.get(id), this.httpExecutionContext.current())
                 .thenApplyAsync(movie -> ok(Json.toJson(movie)), this.httpExecutionContext.current());
+    }
+
+    public CompletionStage<Result> update(Long id, Http.Request request)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            MovieRequest movieRequest = null;
+            try
+            {
+                movieRequest = Utils.convertObject(request.body().asJson(), MovieRequest.class);
+            }
+            catch(Exception ex)
+            {
+                throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+            }
+
+            return this.movieService.update(id, movieRequest);
+        }, this.httpExecutionContext.current()).thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
     }
 }

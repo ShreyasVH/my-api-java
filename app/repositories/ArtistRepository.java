@@ -9,6 +9,7 @@ import models.Artist;
 import modules.DatabaseExecutionContext;
 import play.db.ebean.EbeanConfig;
 import play.db.ebean.EbeanDynamicEvolutions;
+import responses.FilterResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,5 +93,21 @@ public class ArtistRepository
             throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
         }
         return artist;
+    }
+
+    public FilterResponse<Artist> get(int offset, int count)
+    {
+        FilterResponse<Artist> response = new FilterResponse<>();
+        try
+        {
+            response.setTotalCount(db.find(Artist.class).findCount());
+            response.setList(db.find(Artist.class).where().setFirstRow(offset).setMaxRows(count).orderBy("name ASC").findList());
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return response;
     }
 }

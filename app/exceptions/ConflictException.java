@@ -1,5 +1,6 @@
 package exceptions;
 
+import enums.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,5 +15,10 @@ public class ConflictException extends MyException
     public ConflictException(Integer code, String description)
     {
         super(code, description);
+    }
+
+    public ConflictException(String entity)
+    {
+        super(ErrorCode.ALREADY_EXISTS.getCode(), entity + " already exists");
     }
 }

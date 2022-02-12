@@ -73,4 +73,11 @@ public class ArtistsController extends BaseController
         }, this.httpExecutionContext.current())
                 .thenApplyAsync(artist -> ok(Json.toJson(artist)), this.httpExecutionContext.current());
     }
+
+    public CompletionStage<Result> getAll(int offset, int count)
+    {
+        return CompletableFuture
+                .supplyAsync(() -> this.artistService.get(offset, count), this.httpExecutionContext.current())
+                .thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
+    }
 }

@@ -249,6 +249,22 @@ public class MovieRepository
 		return movie;
 	}
 
+	public Movie get(String name, Long languageId, Integer year)
+	{
+		Movie movie = null;
+
+		try
+		{
+			movie = this.db.find(Movie.class).where().eq("name", name).eq("languageId", languageId).eq("year", year).findOne();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+		return movie;
+	}
+
 	public List<MovieActorMap> getActorMaps(Long movieId)
 	{
 		List<MovieActorMap> actorMaps = new ArrayList<>();
@@ -265,6 +281,60 @@ public class MovieRepository
 		return actorMaps;
 	}
 
+	public List<MovieActorMap> saveActorMaps(List<MovieActorMap> actorMaps)
+	{
+		try
+		{
+			this.db.saveAll(actorMaps);
+			return actorMaps;
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+	}
+
+	public void removeActorMaps(List<MovieActorMap> actorMaps)
+	{
+		try
+		{
+			this.db.deleteAll(actorMaps);
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+	}
+
+	public List<MovieDirectorMap> saveDirectorMaps(List<MovieDirectorMap> directorMaps)
+	{
+		try
+		{
+			this.db.saveAll(directorMaps);
+			return directorMaps;
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+	}
+
+	public void removeDirectorMaps(List<MovieDirectorMap> directorMaps)
+	{
+		try
+		{
+			this.db.deleteAll(directorMaps);
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+	}
+
 	public List<MovieDirectorMap> getDirectorMaps(Long movieId)
 	{
 		List<MovieDirectorMap> directorMaps = new ArrayList<>();
@@ -279,5 +349,19 @@ public class MovieRepository
 			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
 		}
 		return directorMaps;
+	}
+
+	public Movie save(Movie movie)
+	{
+		try
+		{
+			this.db.save(movie);
+			return movie;
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
 	}
 }

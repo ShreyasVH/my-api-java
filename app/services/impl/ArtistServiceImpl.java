@@ -10,6 +10,7 @@ import models.*;
 import org.springframework.util.StringUtils;
 import repositories.ArtistRepository;
 import requests.ArtistRequest;
+import responses.FilterResponse;
 import services.ArtistService;
 import utils.Utils;
 
@@ -68,6 +69,7 @@ public class ArtistServiceImpl implements ArtistService
         return this.artistRepository.get(ids);
     }
 
+
     @Override
     public Artist update(String id, ArtistRequest artistRequest)
     {
@@ -112,5 +114,11 @@ public class ArtistServiceImpl implements ArtistService
         }
 
         return existingArtist;
+    }
+
+    @Override
+    public FilterResponse<Artist> get(int offset, int count)
+    {
+        return this.artistRepository.get(offset, count);
     }
 }
