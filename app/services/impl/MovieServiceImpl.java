@@ -5,10 +5,7 @@ import exceptions.ConflictException;
 import exceptions.NotFoundException;
 import io.ebean.SqlRow;
 import com.google.inject.Inject;
-import models.Language;
-import models.Movie;
-import models.MovieActorMap;
-import models.MovieDirectorMap;
+import models.*;
 import org.springframework.util.StringUtils;
 import repositories.MovieRepository;
 import requests.FilterRequest;
@@ -108,6 +105,8 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public MovieResponse update(Long id, MovieRequest request)
     {
+        request.validateForUpdate();
+
         Movie existingMovie = this.movieRepository.get(id);
         if(null == existingMovie)
         {
@@ -145,12 +144,24 @@ public class MovieServiceImpl implements MovieService {
         if(null != request.getLanguageId() && !request.getLanguageId().equals(existingMovie.getLanguageId()))
         {
             isUpdateRequired = true;
+            Language language = this.languageService.get(request.getLanguageId());
+            if(null == language)
+            {
+                throw new NotFoundException("Language");
+            }
+
             existingMovie.setLanguageId(request.getLanguageId());
         }
 
         if(null != request.getFormatId() && !request.getFormatId().equals(existingMovie.getFormatId()))
         {
             isUpdateRequired = true;
+            Format format = this.formatService.get(request.getFormatId());
+            if(null == format)
+            {
+                throw new NotFoundException("Format");
+            }
+
             existingMovie.setFormatId(request.getFormatId());
         }
 
@@ -192,6 +203,12 @@ public class MovieServiceImpl implements MovieService {
 
         if(null != request.getActors())
         {
+            List<Artist> actors = this.artistService.get(request.getActors());
+            if(actors.size() != request.getActors().size())
+            {
+                throw new NotFoundException("Actor");
+            }
+
             List<MovieActorMap> actorsToAdd = new ArrayList<>();
             List<MovieActorMap> actorsToDelete = new ArrayList<>();
 
@@ -225,6 +242,12 @@ public class MovieServiceImpl implements MovieService {
 
         if(null != request.getDirectors())
         {
+            List<Artist> directors = this.artistService.get(request.getDirectors());
+            if(directors.size() != request.getDirectors().size())
+            {
+                throw new NotFoundException("Director");
+            }
+
             List<MovieDirectorMap> directorsToAdd = new ArrayList<>();
             List<MovieDirectorMap> directorsToDelete = new ArrayList<>();
 
