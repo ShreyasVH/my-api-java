@@ -359,6 +359,6 @@ public class MovieServiceImpl implements MovieService {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
         }
 
-        return movieResponse(movie, null, null);
+        return movieResponse(movie, request.getActors(), request.getDirectors());
     }
 }
