@@ -25,8 +25,8 @@ public class MovieRequest
     private Boolean seenInTheatre;
     private String basename;
     private String imageUrl;
-    private List<String> actors;
-    private List<String> directors;
+    private List<Long> actors;
+    private List<Long> directors;
 
     public void validate()
     {

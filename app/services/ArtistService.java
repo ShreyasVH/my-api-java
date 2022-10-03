@@ -14,11 +14,11 @@ public interface ArtistService
 {
     Artist add(ArtistRequest artistRequest) throws MyException;
 
-    Artist get(String id);
+    Artist get(Long id);
 
-    List<Artist> get(List<String> ids);
+    List<Artist> get(List<Long> ids);
 
-    Artist update(String id, ArtistRequest artistRequest);
+    Artist update(Long id, ArtistRequest artistRequest);
 
     FilterResponse<Artist> get(int offset, int count);
 }

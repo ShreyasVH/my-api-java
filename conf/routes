@@ -6,8 +6,8 @@ PUT     /movies/:id                                     controllers.MoviesContro
 
 POST    /artists                                        controllers.ArtistsController.addArtist(request: Request)
 GET     /artists/:offset/:count                         controllers.ArtistsController.getAll(offset: Integer, count: Integer)
-GET     /artists/:id                                    controllers.ArtistsController.get(id: String)
-PUT     /artists/:id                                    controllers.ArtistsController.update(id: String, request: Request)
+GET     /artists/:id                                    controllers.ArtistsController.get(id: Long)
+PUT     /artists/:id                                    controllers.ArtistsController.update(id: Long, request: Request)
 
 GET     /languages                                      controllers.LanguageController.getAll
 

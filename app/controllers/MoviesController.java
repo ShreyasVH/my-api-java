@@ -98,6 +98,6 @@ public class MoviesController extends BaseController
             }
 
             return this.movieService.add(movieRequest);
-        }, this.httpExecutionContext.current()).thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
+        }, this.httpExecutionContext.current()).thenApplyAsync(response -> created(Json.toJson(response)), this.httpExecutionContext.current());
     }
 }

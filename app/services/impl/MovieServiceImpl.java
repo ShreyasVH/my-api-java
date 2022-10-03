@@ -19,7 +19,6 @@ import services.ArtistService;
 import services.FormatService;
 import services.LanguageService;
 import services.MovieService;
-import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class MovieServiceImpl implements MovieService {
         return movieRepository.filter(filterRequest);
     }
 
-    private MovieResponse movieResponse(Movie movie, List<String> actorIds, List<String> directorIds)
+    private MovieResponse movieResponse(Movie movie, List<Long> actorIds, List<Long> directorIds)
     {
         MovieResponse movieResponse = new MovieResponse(movie);
         movieResponse.setLanguage(this.languageService.get(movie.getLanguageId()));
@@ -97,10 +96,10 @@ public class MovieServiceImpl implements MovieService {
         }
 
         List<MovieActorMap> actorMaps = this.movieRepository.getActorMaps(id);
-        List<String> actorIds = actorMaps.stream().map(MovieActorMap::getActorId).collect(Collectors.toList());
+        List<Long> actorIds = actorMaps.stream().map(MovieActorMap::getActorId).collect(Collectors.toList());
 
         List<MovieDirectorMap> directorMaps = this.movieRepository.getDirectorMaps(id);
-        List<String> directorIds = directorMaps.stream().map(MovieDirectorMap::getDirectorId).collect(Collectors.toList());
+        List<Long> directorIds = directorMaps.stream().map(MovieDirectorMap::getDirectorId).collect(Collectors.toList());
 
         return movieResponse(movie, actorIds, directorIds);
     }
@@ -216,14 +215,13 @@ public class MovieServiceImpl implements MovieService {
             List<MovieActorMap> actorsToDelete = new ArrayList<>();
 
             List<MovieActorMap> existingActorMaps = this.movieRepository.getActorMaps(id);
-            List<String> existingActorIds = existingActorMaps.stream().map(MovieActorMap::getActorId).collect(Collectors.toList());
+            List<Long> existingActorIds = existingActorMaps.stream().map(MovieActorMap::getActorId).collect(Collectors.toList());
 
-            for(String actorId: request.getActors())
+            for(Long actorId: request.getActors())
             {
                 if(!existingActorIds.contains(actorId))
                 {
                     MovieActorMap movieActorMap = new MovieActorMap();
-                    movieActorMap.setId(Utils.generateUniqueIdByParam("ma"));
                     movieActorMap.setMovieId(id);
                     movieActorMap.setActorId(actorId);
 
@@ -255,14 +253,13 @@ public class MovieServiceImpl implements MovieService {
             List<MovieDirectorMap> directorsToDelete = new ArrayList<>();
 
             List<MovieDirectorMap> existingDirectorMaps = this.movieRepository.getDirectorMaps(id);
-            List<String> existingDirectorIds = existingDirectorMaps.stream().map(MovieDirectorMap::getDirectorId).collect(Collectors.toList());
+            List<Long> existingDirectorIds = existingDirectorMaps.stream().map(MovieDirectorMap::getDirectorId).collect(Collectors.toList());
 
-            for(String directorId: request.getDirectors())
+            for(Long directorId: request.getDirectors())
             {
                 if(!existingDirectorIds.contains(directorId))
                 {
                     MovieDirectorMap movieDirectorMap = new MovieDirectorMap();
-                    movieDirectorMap.setId(Utils.generateUniqueIdByParam("md"));
                     movieDirectorMap.setMovieId(id);
                     movieDirectorMap.setDirectorId(directorId);
 
@@ -329,7 +326,6 @@ public class MovieServiceImpl implements MovieService {
             Movie finalMovie = movie;
             this.movieRepository.saveActorMaps(request.getActors().stream().map(actorId -> {
                 MovieActorMap actorMap = new MovieActorMap();
-                actorMap.setId(Utils.generateUniqueIdByParam("ma"));
                 actorMap.setMovieId(finalMovie.getId());
                 actorMap.setActorId(actorId);
 
@@ -343,7 +339,6 @@ public class MovieServiceImpl implements MovieService {
             }
             this.movieRepository.saveDirectorMaps(request.getDirectors().stream().map(directorId -> {
                 MovieDirectorMap directorMap = new MovieDirectorMap();
-                directorMap.setId(Utils.generateUniqueIdByParam("md"));
                 directorMap.setMovieId(finalMovie.getId());
                 directorMap.setDirectorId(directorId);
 

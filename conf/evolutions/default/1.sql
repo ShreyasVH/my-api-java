@@ -1,7 +1,7 @@
 -- !Ups
 
 CREATE TABLE `artists` (
- `id` varchar(20) NOT NULL,
+ `id` int unsigned AUTO_INCREMENT NOT NULL,
  `name` varchar(50) NOT NULL,
  `gender` enum('M','F') NOT NULL,
  `image_url` varchar(500) DEFAULT '',
@@ -42,17 +42,17 @@ CREATE TABLE `movies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `movie_actor_map` (
-    `id` varchar(20) NOT NULL,
+   `id` int unsigned NOT NULL AUTO_INCREMENT,
     `movie_id` int unsigned NOT NULL,
-    `actor_id` varchar(20) NOT NULL,
+    `actor_id` int unsigned NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_mam_move_actor` (`movie_id`, `actor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `movie_director_map` (
-  `id` varchar(20) NOT NULL,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `movie_id` int unsigned NOT NULL,
-  `director_id` varchar(20) NOT NULL,
+  `director_id` int unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

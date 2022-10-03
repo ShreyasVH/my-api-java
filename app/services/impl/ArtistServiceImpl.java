@@ -46,13 +46,12 @@ public class ArtistServiceImpl implements ArtistService
         }
 
         Artist artist = new Artist(artistRequest);
-        artist.setId(Utils.generateUniqueIdByParam("ar"));
 
         return artistRepository.saveArtist(artist);
     }
 
     @Override
-    public Artist get(String id)
+    public Artist get(Long id)
     {
         Artist artist = this.artistRepository.get(id);
         if(null == artist)
@@ -64,14 +63,14 @@ public class ArtistServiceImpl implements ArtistService
     }
 
     @Override
-    public List<Artist> get(List<String> ids)
+    public List<Artist> get(List<Long> ids)
     {
         return this.artistRepository.get(ids);
     }
 
 
     @Override
-    public Artist update(String id, ArtistRequest artistRequest)
+    public Artist update(Long id, ArtistRequest artistRequest)
     {
         artistRequest.validateForUpdate();
 

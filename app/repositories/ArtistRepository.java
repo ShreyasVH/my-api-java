@@ -65,7 +65,7 @@ public class ArtistRepository
         return artist;
     }
 
-    public List<Artist> get(List<String> ids)
+    public List<Artist> get(List<Long> ids)
     {
         List<Artist> artists = new ArrayList<>();
         try
@@ -80,7 +80,7 @@ public class ArtistRepository
         return artists;
     }
 
-    public Artist get(String id)
+    public Artist get(Long id)
     {
         Artist artist;
         try

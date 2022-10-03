@@ -50,14 +50,14 @@ public class ArtistsController extends BaseController
         .thenApplyAsync(artist -> ok(Json.toJson(artist)), this.httpExecutionContext.current());
     }
 
-    public CompletionStage<Result> get(String id)
+    public CompletionStage<Result> get(Long id)
     {
         return CompletableFuture
                 .supplyAsync(() -> this.artistService.get(id), this.httpExecutionContext.current())
                 .thenApplyAsync(artist -> ok(Json.toJson(artist)), this.httpExecutionContext.current());
     }
 
-    public CompletionStage<Result> update(String id, Http.Request request)
+    public CompletionStage<Result> update(Long id, Http.Request request)
     {
         return CompletableFuture.supplyAsync(() -> {
             ArtistRequest artistRequest;

@@ -20,11 +20,11 @@ public class MovieDirectorMap
 {
     @Id
     @Column
-    private String id;
+    private Long id;
 
     @Column
     private Long movieId;
 
     @Column
-    private String directorId;
+    private Long directorId;
 }
