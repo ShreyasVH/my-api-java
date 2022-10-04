@@ -14,5 +14,6 @@ public class ServiceModule extends AbstractModule
 		bind(ArtistService.class).to(ArtistServiceImpl.class).asEagerSingleton();
 		bind(LanguageService.class).to(LanguageServiceImpl.class).asEagerSingleton();
 		bind(FormatService.class).to(FormatServiceImpl.class).asEagerSingleton();
+		bind(ElasticService.class).to(ElasticServiceImpl.class).asEagerSingleton();
 	}
 }

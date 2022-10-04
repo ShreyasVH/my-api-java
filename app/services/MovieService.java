@@ -5,6 +5,7 @@ import models.Movie;
 import requests.FilterRequest;
 import requests.MovieRequest;
 import responses.FilterResponse;
+import responses.MovieElasticDocument;
 import responses.MovieResponse;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface MovieService
 {
     List<SqlRow> getDashboard();
 
-    FilterResponse<Map<String, Object>> filter(FilterRequest filterRequest);
+    FilterResponse<MovieElasticDocument> filter(FilterRequest filterRequest);
 
     MovieResponse get(Long id);
 

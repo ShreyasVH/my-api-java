@@ -11,6 +11,6 @@ import java.util.List;
 public class FilterResponse<T>
 {
     private Integer offset = 0;
-    private Integer totalCount = 0;
+    private long totalCount = 0L;
     private List<T> list = new ArrayList<>();
 }

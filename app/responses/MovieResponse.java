@@ -8,6 +8,7 @@ import models.Format;
 import models.Language;
 import models.Movie;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -28,6 +29,7 @@ public class MovieResponse
     private String imageUrl;
     private List<Artist> actors;
     private List<Artist> directors;
+    private Boolean active;
 
     public MovieResponse(Movie movie)
     {
@@ -40,5 +42,48 @@ public class MovieResponse
         this.seenInTheatre = movie.getSeenInTheatre();
         this.basename = movie.getBasename();
         this.imageUrl = movie.getImageUrl();
+        this.active = movie.getActive();
+    }
+
+    public MovieResponse(MovieElasticDocument movieElasticDocument)
+    {
+        this.id = movieElasticDocument.getId();
+        this.name = movieElasticDocument.getName();
+        this.size = movieElasticDocument.getSize();
+        this.quality = movieElasticDocument.getQuality();
+        this.year = movieElasticDocument.getYear();
+        this.subtitles = movieElasticDocument.getSubtitles();
+        this.seenInTheatre = movieElasticDocument.getSeenInTheatre();
+        this.basename = movieElasticDocument.getBasename();
+        this.imageUrl = movieElasticDocument.getImageUrl();
+        this.language = new Language(movieElasticDocument.languageId, movieElasticDocument.languageName);
+        this.format = new Format(movieElasticDocument.formatId, movieElasticDocument.formatName);
+        this.active = movieElasticDocument.getActive();
+
+        List<Artist> actors = new ArrayList<>();
+        for(int i = 0; i < movieElasticDocument.getActorIds().size(); i++)
+        {
+            Artist actor = new Artist(
+                movieElasticDocument.getActorIds().get(i),
+                movieElasticDocument.getActorNames().get(i),
+                movieElasticDocument.getActorGenders().get(i),
+                movieElasticDocument.getActorImageUrls().get(i)
+            );
+            actors.add(actor);
+        }
+        this.actors = actors;
+
+        List<Artist> directors = new ArrayList<>();
+        for(int i = 0; i < movieElasticDocument.getDirectorIds().size(); i++)
+        {
+            Artist director = new Artist(
+                movieElasticDocument.getDirectorIds().get(i),
+                movieElasticDocument.getDirectorNames().get(i),
+                movieElasticDocument.getDirectorGenders().get(i),
+                movieElasticDocument.getDirectorImageUrls().get(i)
+            );
+            directors.add(director);
+        }
+        this.directors = directors;
     }
 }
