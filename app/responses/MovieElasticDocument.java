@@ -9,6 +9,7 @@ import models.Format;
 import models.Language;
 import models.Movie;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ public class MovieElasticDocument
     public String formatName;
     public String quality;
     public Integer year;
+    public Long releaseDate;
     public Boolean subtitles;
     public Boolean seenInTheatre;
     public String basename;
@@ -47,12 +49,22 @@ public class MovieElasticDocument
         this.name = movie.getName();
         this.size = movie.getSize();
         this.quality = movie.getQuality();
-        this.year = movie.getYear();
         this.subtitles = movie.getSubtitles();
         this.seenInTheatre = movie.getSeenInTheatre();
         this.basename = movie.getBasename();
         this.imageUrl = movie.getImageUrl();
         this.active = movie.getActive();
+
+        if(movie.getReleaseDate() != null)
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(movie.getReleaseDate());
+            calendar.add(Calendar.HOUR, -5);
+            calendar.add(Calendar.MINUTE, -30);
+
+            this.releaseDate = calendar.getTime().getTime();
+            this.year = calendar.get(Calendar.YEAR);
+        }
     }
 
     public void setLanguage(Language language)

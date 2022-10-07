@@ -12,10 +12,7 @@ import models.MovieDirectorMap;
 import org.elasticsearch.search.sort.SortOrder;
 import play.db.ebean.EbeanConfig;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.inject.Inject;
 import modules.DatabaseExecutionContext;
@@ -23,6 +20,7 @@ import modules.DatabaseExecutionContext;
 import play.db.ebean.EbeanDynamicEvolutions;
 import requests.FilterRequest;
 import responses.FilterResponse;
+import utils.Utils;
 
 public class MovieRepository
 {
@@ -131,13 +129,15 @@ public class MovieRepository
 		return movie;
 	}
 
-	public Movie get(String name, Long languageId, Integer year)
+	public Movie get(String name, Long languageId, Date releaseDate)
 	{
 		Movie movie = null;
 
 		try
 		{
-			movie = this.db.find(Movie.class).where().eq("name", name).eq("languageId", languageId).eq("year", year).findOne();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(releaseDate);
+			movie = this.db.find(Movie.class).where().eq("name", name).eq("languageId", languageId).eq("YEAR(releaseDate)", calendar.get(Calendar.YEAR)).findOne();
 		}
 		catch(Exception ex)
 		{

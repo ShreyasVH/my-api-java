@@ -85,6 +85,14 @@
           }
         }
       },
+      "releaseDate": {
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
+          }
+        }
+      },
       "seen_in_theatre": {
         "type": "boolean",
         "fields": {

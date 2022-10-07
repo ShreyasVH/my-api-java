@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
+import utils.Utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +21,7 @@ public class MovieRequest
     private Long size;
     private Long formatId;
     private String quality;
-    private Integer year;
+    private String releaseDate;
     private Boolean subtitles;
     private Boolean seenInTheatre;
     private String basename;
@@ -50,9 +51,14 @@ public class MovieRequest
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Name cannot be empty");
         }
 
-        if(null == year || year <= 0)
+        if(!StringUtils.hasText(releaseDate))
         {
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Year cannot be empty");
+            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Release Date cannot be empty");
+        }
+
+        if(Utils.parseDateString(releaseDate) == null)
+        {
+            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid Release Date");
         }
 
         if(!StringUtils.hasText(quality))
@@ -83,9 +89,9 @@ public class MovieRequest
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid Format");
         }
 
-        if(null != year && year <= 0)
+        if(StringUtils.hasText(releaseDate) && Utils.parseDateString(releaseDate) == null)
         {
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid Year");
+            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid Release Date");
         }
 
         if(null != size && size <= 0)

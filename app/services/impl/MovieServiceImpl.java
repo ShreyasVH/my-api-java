@@ -22,8 +22,10 @@ import responses.FilterResponse;
 import responses.MovieElasticDocument;
 import responses.MovieResponse;
 import services.*;
+import utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -159,15 +161,16 @@ public class MovieServiceImpl implements MovieService {
             throw new NotFoundException("Movie");
         }
 
-        if((StringUtils.hasText(request.getName()) && !request.getName().equals(existingMovie.getName())) ||
-                (null != request.getYear() && !request.getYear().equals(existingMovie.getYear())) ||
-                (null != request.getLanguageId() && !request.getLanguageId().equals(existingMovie.getLanguageId())))
+        if(
+            (StringUtils.hasText(request.getName()) && !request.getName().equals(existingMovie.getName())) ||
+            (StringUtils.hasText(request.getReleaseDate()) && !Utils.parseDateString(request.getReleaseDate()).equals(existingMovie.getReleaseDate())) ||
+            (null != request.getLanguageId() && !request.getLanguageId().equals(existingMovie.getLanguageId())))
         {
             String name = ((StringUtils.hasText(request.getName())) ? request.getName() : existingMovie.getName());
             Long languageId = ((null != request.getLanguageId()) ? request.getLanguageId() : existingMovie.getLanguageId());
-            Integer year = ((null != request.getYear()) ? request.getYear() : existingMovie.getYear());
+            Date releaseDate = ((StringUtils.hasText(request.getReleaseDate())) ? Utils.parseDateString(request.getReleaseDate()) : existingMovie.getReleaseDate());
 
-            Movie duplicateMovie = this.movieRepository.get(name, languageId, year);
+            Movie duplicateMovie = this.movieRepository.get(name, languageId, releaseDate);
             if(null != duplicateMovie)
             {
                 throw new ConflictException("Movie");
@@ -229,10 +232,10 @@ public class MovieServiceImpl implements MovieService {
             existingMovie.setBasename(request.getBasename());
         }
 
-        if(null != request.getYear() && !request.getYear().equals(existingMovie.getYear()))
+        if(StringUtils.hasText(request.getReleaseDate()))
         {
             isUpdateRequired = true;
-            existingMovie.setYear(request.getYear());
+            existingMovie.setReleaseDate(Utils.parseDateString(request.getReleaseDate()));
         }
 
         if(StringUtils.hasText(request.getQuality()) && !request.getQuality().equals(existingMovie.getQuality()))
@@ -338,7 +341,7 @@ public class MovieServiceImpl implements MovieService {
     {
         request.validate();
 
-        Movie existingMovie = this.movieRepository.get(request.getName(), request.getLanguageId(), request.getYear());
+        Movie existingMovie = this.movieRepository.get(request.getName(), request.getLanguageId(), Utils.parseDateString(request.getReleaseDate()));
         if(null != existingMovie)
         {
             throw new ConflictException("Movie");

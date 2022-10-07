@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import io.ebean.Model;
 import requests.MovieRequest;
+import utils.Utils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * Created by shreyasvh on 7/30/17.
@@ -45,7 +47,7 @@ public class Movie extends Model
 	private String quality;
 
 	@Column
-	private Integer year;
+	private Date releaseDate;
 
 	@Column
 	private Boolean subtitles;
@@ -70,7 +72,6 @@ public class Movie extends Model
 		this.languageId = movie.getLong("language_id");
 		this.size = movie.getLong("size");
 		this.quality = movie.getString("quality");
-		this.year = movie.getInteger("year");
 		this.subtitles = movie.getBoolean("subtitles");
 		this.seenInTheatre = movie.getBoolean("seen_in_theatre");
 		this.basename = movie.getString("basename");
@@ -87,7 +88,7 @@ public class Movie extends Model
 		this.subtitles = request.getSubtitles();
 		this.seenInTheatre = request.getSeenInTheatre();
 		this.quality = request.getQuality();
-		this.year = request.getYear();
+		this.releaseDate =  Utils.parseDateString(request.getReleaseDate());
 		this.basename = request.getBasename();
 		this.imageUrl = request.getImageUrl();
 	}

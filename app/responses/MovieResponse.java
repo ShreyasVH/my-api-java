@@ -22,7 +22,7 @@ public class MovieResponse
     public Long size;
     public Format format;
     public String quality;
-    public Integer year;
+    public Long releaseDate;
     public Boolean subtitles;
     public Boolean seenInTheatre;
     public String basename;
@@ -37,7 +37,6 @@ public class MovieResponse
         this.name = movie.getName();
         this.size = movie.getSize();
         this.quality = movie.getQuality();
-        this.year = movie.getYear();
         this.subtitles = movie.getSubtitles();
         this.seenInTheatre = movie.getSeenInTheatre();
         this.basename = movie.getBasename();
@@ -51,7 +50,12 @@ public class MovieResponse
         this.name = movieElasticDocument.getName();
         this.size = movieElasticDocument.getSize();
         this.quality = movieElasticDocument.getQuality();
-        this.year = movieElasticDocument.getYear();
+
+        if(movieElasticDocument.getReleaseDate() != null)
+        {
+            this.releaseDate = movieElasticDocument.getReleaseDate();
+        }
+
         this.subtitles = movieElasticDocument.getSubtitles();
         this.seenInTheatre = movieElasticDocument.getSeenInTheatre();
         this.basename = movieElasticDocument.getBasename();
