@@ -23,7 +23,9 @@ import responses.MovieElasticDocument;
 import responses.MovieResponse;
 import services.*;
 import utils.Utils;
+import constants.Constants;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -406,5 +408,35 @@ public class MovieServiceImpl implements MovieService {
             transaction.end();
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
         }
+    }
+
+    @Override
+    public List<MovieResponse> getMoviesByKeyword(String keyword)
+    {
+        SearchRequest request = new SearchRequest("movies");
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
+        keyword = URLDecoder.decode(keyword);
+        String[] words = keyword.split(" ");
+        BoolQueryBuilder finalQuery = QueryBuilders.boolQuery();
+        for(String word : words)
+        {
+            word = word.toLowerCase();
+            if(word.length() >= 2)
+            {
+                finalQuery.must(QueryBuilders.termQuery("name", word));
+            }
+        }
+        finalQuery.must(QueryBuilders.termQuery("active", true));
+
+        builder.query(finalQuery);
+
+        builder.sort("name" + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
+        builder.sort("id" + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
+
+        request.source(builder);
+        FilterResponse<MovieElasticDocument> response = elasticService.search(request, MovieElasticDocument.class);
+        return response.getList().stream().map(MovieResponse::new).collect(Collectors.toList());
     }
 }

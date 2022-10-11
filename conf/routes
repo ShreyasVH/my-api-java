@@ -3,6 +3,7 @@ POST    /movies/filter                                  controllers.MoviesContro
 POST    /movies                                         controllers.MoviesController.add(request: Request)
 GET     /movies/:id                                     controllers.MoviesController.get(id: Long)
 PUT     /movies/:id                                     controllers.MoviesController.update(id: Long, request: Request)
+GET     /movies/keyword/:keyword                        controllers.MoviesController.searchByKeyword(keyword: String)
 
 POST    /artists                                        controllers.ArtistsController.addArtist(request: Request)
 GET     /artists/:offset/:count                         controllers.ArtistsController.getAll(offset: Integer, count: Integer)

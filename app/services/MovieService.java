@@ -25,4 +25,6 @@ public interface MovieService
     MovieResponse update(Long id, MovieRequest request);
 
     MovieResponse add(MovieRequest request);
+
+    List<MovieResponse> getMoviesByKeyword(String keyword);
 }

@@ -100,4 +100,11 @@ public class MoviesController extends BaseController
             return this.movieService.add(movieRequest);
         }, this.httpExecutionContext.current()).thenApplyAsync(response -> created(Json.toJson(response)), this.httpExecutionContext.current());
     }
+
+    public CompletionStage<Result> searchByKeyword(String keyword)
+    {
+        return CompletableFuture
+                .supplyAsync(() -> movieService.getMoviesByKeyword(keyword), this.httpExecutionContext.current())
+                .thenApplyAsync(movie -> ok(Json.toJson(movie)), this.httpExecutionContext.current());
+    }
 }
