@@ -439,4 +439,15 @@ public class MovieServiceImpl implements MovieService {
         FilterResponse<MovieElasticDocument> response = elasticService.search(request, MovieElasticDocument.class);
         return response.getList().stream().map(MovieResponse::new).collect(Collectors.toList());
     }
+
+    @Override
+    public boolean indexMovie(Long id) {
+        Movie existingMovie = this.movieRepository.get(id);
+        MovieElasticDocument movieElasticDocument = this.movieElasticDocument(existingMovie, null, null);
+        this.elasticService.index("movies", id, movieElasticDocument);
+
+        return true;
+    }
+
+
 }
