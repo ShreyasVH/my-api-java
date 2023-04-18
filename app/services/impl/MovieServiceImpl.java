@@ -131,11 +131,19 @@ public class MovieServiceImpl implements MovieService {
         movieElasticDocument.setLanguage(this.languageService.get(movie.getLanguageId()));
         movieElasticDocument.setFormat(this.formatService.get(movie.getFormatId()));
 
+        List<Artist> actors = new ArrayList<>();
         if(null == actorIds)
         {
             actorIds = this.movieRepository.getActorMaps(movie.getId()).stream().map(MovieActorMap::getActorId).collect(Collectors.toList());
         }
-        movieElasticDocument.setActors(this.artistService.get(actorIds));
+        Map<Long, Artist> actorMap = this.artistService.get(actorIds).stream().collect(Collectors.toMap(artist -> artist.getId(), artist -> artist));
+        for(Long actorId: actorIds) {
+            if(actorMap.containsKey(actorId)) {
+                actors.add(actorMap.get(actorId));
+            }
+        }
+
+        movieElasticDocument.setActors(actors);
 
         if(null == directorIds)
         {
