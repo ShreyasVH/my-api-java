@@ -15,3 +15,5 @@ dist
 /.settings
 /TODO.txt
 .env
+.envrc
+.DS_Store

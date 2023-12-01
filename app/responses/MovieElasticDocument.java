@@ -59,8 +59,8 @@ public class MovieElasticDocument
         {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(movie.getReleaseDate());
-            calendar.add(Calendar.HOUR, -5);
-            calendar.add(Calendar.MINUTE, -30);
+//            calendar.add(Calendar.HOUR, -5);
+//            calendar.add(Calendar.MINUTE, -30);
 
             this.releaseDate = calendar.getTime().getTime();
             this.year = calendar.get(Calendar.YEAR);

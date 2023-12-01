@@ -1,0 +1,19 @@
+# sbt 1.7.2 path
+export PATH=
+
+# java 11 path
+export PATH=
+
+export MYSQL_IP=
+export MYSQL_PORT=
+export MYSQL_DB_NAME=
+export MYSQL_USER=
+export MYSQL_PASSWORD=
+
+export PORT=
+export DEBUG_PORT=
+
+export ELASTIC_IP_HTTP=
+export ELASTIC_PORT_HTTP=
+export ELASTIC_SCHEME=
+export ELASTIC_USE_CREDENTIALS=
