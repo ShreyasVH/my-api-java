@@ -28,6 +28,7 @@ public class MovieRequest
     private String imageUrl;
     private List<Long> actors;
     private List<Long> directors;
+    private boolean obtained;
 
     public void validate()
     {
@@ -36,19 +37,9 @@ public class MovieRequest
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Name cannot be empty");
         }
 
-        if(null == size || size <= 0)
-        {
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid size");
-        }
-
         if(null == languageId || languageId <= 0)
         {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Language cannot be empty");
-        }
-
-        if(null == formatId || formatId <= 0)
-        {
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Name cannot be empty");
         }
 
         if(!StringUtils.hasText(releaseDate))
@@ -59,11 +50,6 @@ public class MovieRequest
         if(Utils.parseDateString(releaseDate) == null)
         {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid Release Date");
-        }
-
-        if(!StringUtils.hasText(quality))
-        {
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Quality cannot be empty");
         }
 
         if(null == actors || actors.isEmpty())
@@ -99,8 +85,8 @@ public class MovieRequest
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid size");
         }
 
-        List<String> validQualities = Arrays.asList("good", "normal");
-        if(null != quality && !validQualities.contains(quality))
+        List<String> validQualities = Arrays.asList("good", "normal", null);
+        if(!validQualities.contains(quality))
         {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid quality");
         }

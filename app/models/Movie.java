@@ -62,6 +62,9 @@ public class Movie extends Model
 	private Boolean active;
 
 	@Column
+	private boolean obtained;
+
+	@Column
 	private String imageUrl;
 
 	public Movie(SqlRow movie)
@@ -77,19 +80,15 @@ public class Movie extends Model
 		this.basename = movie.getString("basename");
 		this.active = movie.getBoolean("active");
 		this.imageUrl = movie.getString("image_url");
+		this.obtained = movie.getBoolean("obtained");
 	}
 
 	public Movie(MovieRequest request)
 	{
 		this.name = request.getName();
-		this.size = request.getSize();
 		this.languageId = request.getLanguageId();
-		this.formatId = request.getFormatId();
-		this.subtitles = request.getSubtitles();
 		this.seenInTheatre = request.getSeenInTheatre();
-		this.quality = request.getQuality();
 		this.releaseDate =  Utils.parseDateString(request.getReleaseDate());
-		this.basename = request.getBasename();
 		this.imageUrl = request.getImageUrl();
 	}
 }

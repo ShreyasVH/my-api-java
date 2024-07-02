@@ -77,6 +77,9 @@
         "analyzer": "my_analyzer",
         "search_analyzer": "my_search_analyzer"
       },
+      "obtained": {
+        "type": "boolean"
+      },
       "quality": {
         "type": "keyword",
         "fields": {

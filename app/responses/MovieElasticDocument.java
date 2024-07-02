@@ -42,6 +42,7 @@ public class MovieElasticDocument
     private List<String> directorImageUrls;
     private List<String> directorGenders;
     private Boolean active;
+    private boolean obtained;
 
     public MovieElasticDocument(Movie movie)
     {
@@ -54,6 +55,7 @@ public class MovieElasticDocument
         this.basename = movie.getBasename();
         this.imageUrl = movie.getImageUrl();
         this.active = movie.getActive();
+        this.obtained = movie.isObtained();
 
         if(movie.getReleaseDate() != null)
         {
