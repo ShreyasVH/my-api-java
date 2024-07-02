@@ -10,4 +10,4 @@ ALTER TABLE `movies` DROP `obtained`;
 ALTER TABLE `movies` CHANGE `size` `size` bigint(20) unsigned NOT NULL;
 ALTER TABLE `movies` CHANGE `format_id` `format_id` int unsigned NOT NULL;
 ALTER TABLE `movies` CHANGE `quality` `quality` varchar(10) NOT NULL;
-ALTER TABLE `movies` CHANGE `subtitles` `subtitles` int(1) NULL;
+ALTER TABLE `movies` CHANGE `subtitles` `subtitles` int(1) NOT NULL;
