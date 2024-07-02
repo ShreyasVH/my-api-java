@@ -26,10 +26,7 @@ import utils.Utils;
 import constants.Constants;
 
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -79,7 +76,7 @@ public class MovieServiceImpl implements MovieService {
 
     private SearchRequest getElasticRequest(FilterRequest filterRequest)
     {
-        SearchRequest request = new SearchRequest("movies");
+        SearchRequest request = new SearchRequest(Constants.INDEX_NAME_MOVIES);
 
         SearchSourceBuilder builder = new SearchSourceBuilder();
         builder.from(filterRequest.getOffset());
@@ -129,7 +126,9 @@ public class MovieServiceImpl implements MovieService {
     {
         MovieElasticDocument movieElasticDocument = new MovieElasticDocument(movie);
         movieElasticDocument.setLanguage(this.languageService.get(movie.getLanguageId()));
-        movieElasticDocument.setFormat(this.formatService.get(movie.getFormatId()));
+        if (movie.getFormatId() != null) {
+            movieElasticDocument.setFormat(this.formatService.get(movie.getFormatId()));
+        }
 
         List<Artist> actors = new ArrayList<>();
         if(null == actorIds)
@@ -157,7 +156,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public MovieResponse get(Long id)
     {
-        return new MovieResponse(this.elasticService.get("movies", id, MovieElasticDocument.class));
+        return new MovieResponse(this.elasticService.get(Constants.INDEX_NAME_MOVIES, id, MovieElasticDocument.class));
     }
 
     @Override
@@ -194,7 +193,7 @@ public class MovieServiceImpl implements MovieService {
             existingMovie.setName(request.getName());
         }
 
-        if(null != request.getSize() && !request.getSize().equals(existingMovie.getSize()))
+        if(!Objects.equals(request.getSize(), existingMovie.getSize()))
         {
             isUpdateRequired = true;
             existingMovie.setSize(request.getSize());
@@ -212,19 +211,21 @@ public class MovieServiceImpl implements MovieService {
             existingMovie.setLanguageId(request.getLanguageId());
         }
 
-        if(null != request.getFormatId() && !request.getFormatId().equals(existingMovie.getFormatId()))
+        if(!Objects.equals(request.getFormatId(), existingMovie.getFormatId()))
         {
             isUpdateRequired = true;
-            Format format = this.formatService.get(request.getFormatId());
-            if(null == format)
-            {
-                throw new NotFoundException("Format");
+            if (null != request.getFormatId()) {
+                Format format = this.formatService.get(request.getFormatId());
+                if(null == format)
+                {
+                    throw new NotFoundException("Format");
+                }
             }
 
             existingMovie.setFormatId(request.getFormatId());
         }
 
-        if(null != request.getSubtitles() && !request.getSubtitles().equals(existingMovie.getSubtitles()))
+        if(!Objects.equals(request.getSubtitles(), existingMovie.getSubtitles()))
         {
             isUpdateRequired = true;
             existingMovie.setSubtitles(request.getSubtitles());
@@ -236,7 +237,7 @@ public class MovieServiceImpl implements MovieService {
             existingMovie.setSeenInTheatre(request.getSeenInTheatre());
         }
 
-        if(StringUtils.hasText(request.getBasename()) && !request.getBasename().equals(existingMovie.getBasename()))
+        if(!Objects.equals(request.getBasename(), existingMovie.getBasename()))
         {
             isUpdateRequired = true;
             existingMovie.setBasename(request.getBasename());
@@ -248,7 +249,7 @@ public class MovieServiceImpl implements MovieService {
             existingMovie.setReleaseDate(Utils.parseDateString(request.getReleaseDate()));
         }
 
-        if(StringUtils.hasText(request.getQuality()) && !request.getQuality().equals(existingMovie.getQuality()))
+        if(!Objects.equals(request.getQuality(), existingMovie.getQuality()))
         {
             isUpdateRequired = true;
             existingMovie.setQuality(request.getQuality());
@@ -258,6 +259,11 @@ public class MovieServiceImpl implements MovieService {
         {
             isUpdateRequired = true;
             existingMovie.setImageUrl(request.getImageUrl());
+        }
+
+        if (request.isObtained() != existingMovie.isObtained()) {
+            isUpdateRequired = true;
+            existingMovie.setObtained(request.isObtained());
         }
 
         if(null != request.getActors())
@@ -340,7 +346,7 @@ public class MovieServiceImpl implements MovieService {
         if(isUpdateRequired)
         {
             existingMovie = this.movieRepository.save(existingMovie);
-            this.elasticService.index("movies", id, movieElasticDocument);
+            this.elasticService.index(Constants.INDEX_NAME_MOVIES, id, movieElasticDocument);
         }
 
         return new MovieResponse(movieElasticDocument);
@@ -359,6 +365,7 @@ public class MovieServiceImpl implements MovieService {
 
         Movie movie = new Movie(request);
         movie.setActive(true);
+        movie.setObtained(false);
 
         Transaction transaction = Ebean.beginTransaction();
         try
@@ -367,12 +374,6 @@ public class MovieServiceImpl implements MovieService {
             if(null == language)
             {
                 throw new NotFoundException("Language");
-            }
-
-            Format format = this.formatService.get(request.getFormatId());
-            if(null == format)
-            {
-                throw new NotFoundException("Format");
             }
 
             movie = this.movieRepository.save(movie);
@@ -407,7 +408,7 @@ public class MovieServiceImpl implements MovieService {
             transaction.commit();
 
             MovieElasticDocument movieElasticDocument = this.movieElasticDocument(movie, request.getActors(), request.getDirectors());
-            this.elasticService.index("movies", movie.getId(), movieElasticDocument);
+            this.elasticService.index(Constants.INDEX_NAME_MOVIES, movie.getId(), movieElasticDocument);
             return new MovieResponse(movieElasticDocument);
         }
         catch(Exception ex)
@@ -421,7 +422,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public List<MovieResponse> getMoviesByKeyword(String keyword)
     {
-        SearchRequest request = new SearchRequest("movies");
+        SearchRequest request = new SearchRequest(Constants.INDEX_NAME_MOVIES);
 
         SearchSourceBuilder builder = new SearchSourceBuilder();
 
@@ -452,7 +453,7 @@ public class MovieServiceImpl implements MovieService {
     public boolean indexMovie(Long id) {
         Movie existingMovie = this.movieRepository.get(id);
         MovieElasticDocument movieElasticDocument = this.movieElasticDocument(existingMovie, null, null);
-        this.elasticService.index("movies", id, movieElasticDocument);
+        this.elasticService.index(Constants.INDEX_NAME_MOVIES, id, movieElasticDocument);
 
         return true;
     }

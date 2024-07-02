@@ -30,6 +30,7 @@ public class MovieResponse
     private List<Artist> actors;
     private List<Artist> directors;
     private Boolean active;
+    private boolean obtained;
 
     public MovieResponse(Movie movie)
     {
@@ -63,6 +64,7 @@ public class MovieResponse
         this.language = new Language(movieElasticDocument.languageId, movieElasticDocument.languageName);
         this.format = new Format(movieElasticDocument.formatId, movieElasticDocument.formatName);
         this.active = movieElasticDocument.getActive();
+        this.obtained = movieElasticDocument.isObtained();
 
         List<Artist> actors = new ArrayList<>();
         for(int i = 0; i < movieElasticDocument.getActorIds().size(); i++)

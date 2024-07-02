@@ -46,7 +46,7 @@ public class MovieRepository
 		List<SqlRow> dbList = new ArrayList<>();
 		try
 		{
-			String sql = "select l.id as language_id, l.name as language, count(*) as count, sum(m.size) as size from movies m inner join languages l on m.language_id = l.id where m.active = 1 group by m.language_id";
+			String sql = "select l.id as language_id, l.name as language, count(*) as count, count(case when obtained = 1 then 1 end) as obtained_count, sum(case when m.obtained = 1 then m.size else 0 end) as size from movies m inner join languages l on m.language_id = l.id where m.active = 1 group by m.language_id;";
 			SqlQuery query = db.createSqlQuery(sql);
 			dbList = query.findList();
 		}
