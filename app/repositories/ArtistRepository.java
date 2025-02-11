@@ -11,6 +11,7 @@ import play.db.ebean.EbeanConfig;
 import play.db.ebean.EbeanDynamicEvolutions;
 import responses.FilterResponse;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,5 +110,21 @@ public class ArtistRepository
             throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
         }
         return response;
+    }
+
+    public List<Artist> getArtistsByKeyword(String keyword)
+    {
+        keyword = URLDecoder.decode(keyword);
+        List<Artist> artists = new ArrayList<>();
+        try
+        {
+            artists = db.find(Artist.class).where().icontains("name", keyword).orderBy("name ASC").findList();
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return artists;
     }
 }

@@ -9,6 +9,7 @@ import io.ebean.SqlRow;
 import models.Movie;
 import models.MovieActorMap;
 import models.MovieDirectorMap;
+import models.SongSingerMap;
 import org.elasticsearch.search.sort.SortOrder;
 import play.db.ebean.EbeanConfig;
 
@@ -239,6 +240,20 @@ public class MovieRepository
 		{
 			this.db.save(movie);
 			return movie;
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+	}
+
+	public List<SongSingerMap> saveSingerMaps(List<SongSingerMap> singerMaps)
+	{
+		try
+		{
+			this.db.saveAll(singerMaps);
+			return singerMaps;
 		}
 		catch(Exception ex)
 		{

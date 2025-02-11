@@ -1,0 +1,178 @@
+{
+  "aliases": {},
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword",
+        "fields": {
+          "sort": {
+            "type": "keyword"
+          }
+        }
+      },
+      "name": {
+        "type": "keyword",
+        "fields": {
+          "sort": {
+            "type": "keyword"
+          }
+        }
+      },
+      "singerIds": {
+        "type": "long"
+      },
+      "singerNames": {
+        "type": "keyword"
+      },
+      "singerGenders": {
+        "type": "keyword"
+      },
+      "singerImageUrls": {
+        "type": "keyword"
+      },
+      "composerIds": {
+        "type": "long"
+      },
+      "composerNames": {
+        "type": "keyword"
+      },
+      "composerGenders": {
+        "type": "keyword"
+      },
+      "composerImageUrls": {
+        "type": "keyword"
+      },
+      "lyricistIds": {
+        "type": "long"
+      },
+      "lyricistNames": {
+        "type": "keyword"
+      },
+      "lyricistGenders": {
+        "type": "keyword"
+      },
+      "lyricistImageUrls": {
+        "type": "keyword"
+      },
+      "size": {
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
+          }
+        }
+      },
+      "obtained": {
+        "type": "boolean"
+      },
+      "active": {
+        "type": "boolean"
+      },
+      "actorIds": {
+        "type": "long"
+      },
+      "actorNames": {
+        "type": "keyword"
+      },
+      "actorGenders": {
+        "type": "keyword"
+      },
+      "actorImageUrls": {
+        "type": "keyword"
+      },
+      "directorIds": {
+        "type": "long"
+      },
+      "directorNames": {
+        "type": "keyword"
+      },
+      "directorGenders": {
+        "type": "keyword"
+      },
+      "directorImageUrls": {
+        "type": "keyword"
+      },
+      "movieImageUrl": {
+        "type": "text"
+      },
+      "movieLanguageId": {
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
+          }
+        }
+      },
+      "movieLanguageName": {
+        "type": "keyword"
+      },
+      "movieId": {
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
+          }
+        }
+      },
+      "movieName": {
+        "type": "text",
+        "fields": {
+          "sort": {
+            "type": "keyword"
+          }
+        },
+        "analyzer": "my_analyzer",
+        "search_analyzer": "my_search_analyzer"
+      },
+      "movieReleaseDate": {
+        "type": "long",
+        "fields": {
+          "sort": {
+            "type": "long"
+          }
+        }
+      },
+      "movieYear": {
+        "type": "integer",
+        "fields": {
+          "sort": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "index": {
+      "number_of_shards": "5",
+      "max_ngram_diff": "10",
+      "analysis": {
+        "analyzer": {
+          "my_analyzer": {
+            "type": "custom",
+            "filter": [
+              "lowercase"
+            ],
+            "tokenizer": "my_tokenizer"
+          },
+          "my_search_analyzer": {
+            "type": "custom",
+            "tokenizer": "lowercase"
+          }
+        },
+        "tokenizer": {
+          "my_tokenizer": {
+            "token_chars": [
+              "letter",
+              "digit"
+            ],
+            "min_gram": "2",
+            "type": "ngram",
+            "max_gram": "10"
+          }
+        }
+      },
+      "number_of_replicas": "1"
+    }
+  }
+}

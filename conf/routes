@@ -7,6 +7,7 @@ GET     /movies/keyword/:keyword                        controllers.MoviesContro
 GET     /movies/index/:id                               controllers.MoviesController.index(id: Long)
 
 POST    /artists                                        controllers.ArtistsController.addArtist(request: Request)
+GET     /artists/keyword/:keyword                       controllers.ArtistsController.getArtistsByKeyword(keyword : String)
 GET     /artists/:offset/:count                         controllers.ArtistsController.getAll(offset: Integer, count: Integer)
 GET     /artists/:id                                    controllers.ArtistsController.get(id: Long)
 PUT     /artists/:id                                    controllers.ArtistsController.update(id: Long, request: Request)
@@ -14,3 +15,8 @@ PUT     /artists/:id                                    controllers.ArtistsContr
 GET     /languages                                      controllers.LanguageController.getAll
 
 GET     /formats                                        controllers.FormatController.getAll
+
+POST    /songs/song                                     controllers.SongsController.addSong(request: Request)
+GET     /songs/dashboard                                controllers.SongsController.dashboard()
+POST    /songs/filter                                   controllers.SongsController.filter(request: Request)
+GET     /songs/:id                                      controllers.SongsController.get(id: Long)

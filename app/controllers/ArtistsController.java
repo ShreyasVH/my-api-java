@@ -80,4 +80,11 @@ public class ArtistsController extends BaseController
                 .supplyAsync(() -> this.artistService.get(offset, count), this.httpExecutionContext.current())
                 .thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
     }
+
+    public CompletionStage<Result> getArtistsByKeyword(String keyword)
+    {
+        return CompletableFuture
+                .supplyAsync(() -> this.artistService.getArtistsByKeyword(keyword), this.httpExecutionContext.current())
+                .thenApplyAsync(artist -> ok(Json.toJson(artist)), this.httpExecutionContext.current());
+    }
 }

@@ -21,4 +21,6 @@ public interface ArtistService
     Artist update(Long id, ArtistRequest artistRequest);
 
     FilterResponse<Artist> get(int offset, int count);
+
+    List<Artist> getArtistsByKeyword(String keyword);
 }

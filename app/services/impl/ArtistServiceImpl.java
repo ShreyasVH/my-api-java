@@ -120,4 +120,9 @@ public class ArtistServiceImpl implements ArtistService
     {
         return this.artistRepository.get(offset, count);
     }
+
+    @Override
+    public List<Artist> getArtistsByKeyword(String keyword) {
+        return this.artistRepository.getArtistsByKeyword(keyword);
+    }
 }
