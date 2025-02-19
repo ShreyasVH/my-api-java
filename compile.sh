@@ -1,3 +1,4 @@
-rm -rf myapi-1.0.0
+rm -rf dist
 sbt clean compile dist
-unzip target/universal/myapi-1.0.0.zip
+unzip target/universal/$REPO_NAME-$REPO_VERSION.zip > /dev/null
+mv $REPO_NAME-$REPO_VERSION dist

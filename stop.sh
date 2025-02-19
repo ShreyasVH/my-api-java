@@ -1,2 +1,6 @@
-kill -9 $(cat myapi-1.0.0/RUNNING_PID)
-rm myapi-1.0.0/RUNNING_PID
+if test -f "dist/RUNNING_PID"
+then
+	echo "Stopping My Api Java Server";
+	kill -9 $(cat dist/RUNNING_PID);
+	rm dist/RUNNING_PID;
+fi

@@ -1,1 +1,1 @@
-./myapi-1.0.0/bin/myapi -jvm-debug $DEBUG_PORT -Dhttp.port=$PORT > myapi.log 2>&1 &
+./dist/bin/myapi -jvm-debug $DEBUG_PORT -Dhttp.port=$PORT > myapi.log 2>&1 &
