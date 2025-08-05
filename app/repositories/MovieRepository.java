@@ -136,8 +136,6 @@ public class MovieRepository
 
 		try
 		{
-//			Calendar calendar = Calendar.getInstance();
-//			calendar.setTime(releaseDate);
 			movie = this.db.find(Movie.class).where().eq("name", name).eq("languageId", languageId).eq("releaseDate", releaseDate).findOne();
 		}
 		catch(Exception ex)

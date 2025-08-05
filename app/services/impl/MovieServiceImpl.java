@@ -409,8 +409,7 @@ public class MovieServiceImpl implements MovieService {
             transaction.commit();
 
             MovieElasticDocument movieElasticDocument = this.movieElasticDocument(movie, request.getActors(), request.getDirectors());
-            Long movieId = movie.getId();
-            this.elasticService.index(Constants.INDEX_NAME_MOVIES, movieId, movieElasticDocument);
+            this.elasticService.index(Constants.INDEX_NAME_MOVIES, movie.getId(), movieElasticDocument);
             return new MovieResponse(movieElasticDocument);
         }
         catch(Exception ex)
