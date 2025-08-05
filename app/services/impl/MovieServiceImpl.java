@@ -27,6 +27,7 @@ import constants.Constants;
 
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -177,7 +178,7 @@ public class MovieServiceImpl implements MovieService {
         {
             String name = ((StringUtils.hasText(request.getName())) ? request.getName() : existingMovie.getName());
             Long languageId = ((null != request.getLanguageId()) ? request.getLanguageId() : existingMovie.getLanguageId());
-            Date releaseDate = ((StringUtils.hasText(request.getReleaseDate())) ? Utils.parseDateString(request.getReleaseDate()) : existingMovie.getReleaseDate());
+            String releaseDate = ((StringUtils.hasText(request.getReleaseDate())) ? request.getReleaseDate() : Utils.formatDate(existingMovie.getReleaseDate()));
 
             Movie duplicateMovie = this.movieRepository.get(name, languageId, releaseDate);
             if(null != duplicateMovie)
@@ -346,7 +347,7 @@ public class MovieServiceImpl implements MovieService {
         if(isUpdateRequired)
         {
             existingMovie = this.movieRepository.save(existingMovie);
-            this.elasticService.index(Constants.INDEX_NAME_MOVIES, id, movieElasticDocument);
+            CompletableFuture.supplyAsync(() -> this.elasticService.index(Constants.INDEX_NAME_MOVIES, id, movieElasticDocument));
         }
 
         return new MovieResponse(movieElasticDocument);
@@ -357,7 +358,7 @@ public class MovieServiceImpl implements MovieService {
     {
         request.validate();
 
-        Movie existingMovie = this.movieRepository.get(request.getName(), request.getLanguageId(), Utils.parseDateString(request.getReleaseDate()));
+        Movie existingMovie = this.movieRepository.get(request.getName(), request.getLanguageId(), request.getReleaseDate());
         if(null != existingMovie)
         {
             throw new ConflictException("Movie");
@@ -408,7 +409,8 @@ public class MovieServiceImpl implements MovieService {
             transaction.commit();
 
             MovieElasticDocument movieElasticDocument = this.movieElasticDocument(movie, request.getActors(), request.getDirectors());
-            this.elasticService.index(Constants.INDEX_NAME_MOVIES, movie.getId(), movieElasticDocument);
+            Long movieId = movie.getId();
+            CompletableFuture.supplyAsync(() -> this.elasticService.index(Constants.INDEX_NAME_MOVIES, movieId, movieElasticDocument));
             return new MovieResponse(movieElasticDocument);
         }
         catch(Exception ex)
