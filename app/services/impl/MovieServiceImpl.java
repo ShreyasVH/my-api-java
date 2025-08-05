@@ -347,7 +347,7 @@ public class MovieServiceImpl implements MovieService {
         if(isUpdateRequired)
         {
             existingMovie = this.movieRepository.save(existingMovie);
-            CompletableFuture.supplyAsync(() -> this.elasticService.index(Constants.INDEX_NAME_MOVIES, id, movieElasticDocument));
+            this.elasticService.index(Constants.INDEX_NAME_MOVIES, id, movieElasticDocument);
         }
 
         return new MovieResponse(movieElasticDocument);
@@ -410,7 +410,7 @@ public class MovieServiceImpl implements MovieService {
 
             MovieElasticDocument movieElasticDocument = this.movieElasticDocument(movie, request.getActors(), request.getDirectors());
             Long movieId = movie.getId();
-            CompletableFuture.supplyAsync(() -> this.elasticService.index(Constants.INDEX_NAME_MOVIES, movieId, movieElasticDocument));
+            this.elasticService.index(Constants.INDEX_NAME_MOVIES, movieId, movieElasticDocument);
             return new MovieResponse(movieElasticDocument);
         }
         catch(Exception ex)
