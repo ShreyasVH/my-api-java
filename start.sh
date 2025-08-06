@@ -22,7 +22,7 @@
 #set -o allexport;
 #source .env;
 #set +o allexport;
-sbt -jvm-debug "8021" -Dlogger.file=conf/logger.xml -Dhttp.address="0.0.0.0" "run 9021";
+sbt -jvm-debug "8021" -Dlogger.file=conf/logback.xml -Dhttp.address="0.0.0.0" "run 9021";
 
 #kill -9 $(lsof -i:9200 -t);
 #kill -9 $(lsof -i:3306 -t);

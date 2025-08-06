@@ -177,7 +177,7 @@ public class MovieServiceImpl implements MovieService {
         {
             String name = ((StringUtils.hasText(request.getName())) ? request.getName() : existingMovie.getName());
             Long languageId = ((null != request.getLanguageId()) ? request.getLanguageId() : existingMovie.getLanguageId());
-            Date releaseDate = ((StringUtils.hasText(request.getReleaseDate())) ? Utils.parseDateString(request.getReleaseDate()) : existingMovie.getReleaseDate());
+            String releaseDate = ((StringUtils.hasText(request.getReleaseDate())) ? request.getReleaseDate() : Utils.formatDate(existingMovie.getReleaseDate()));
 
             Movie duplicateMovie = this.movieRepository.get(name, languageId, releaseDate);
             if(null != duplicateMovie)
@@ -357,7 +357,7 @@ public class MovieServiceImpl implements MovieService {
     {
         request.validate();
 
-        Movie existingMovie = this.movieRepository.get(request.getName(), request.getLanguageId(), Utils.parseDateString(request.getReleaseDate()));
+        Movie existingMovie = this.movieRepository.get(request.getName(), request.getLanguageId(), request.getReleaseDate());
         if(null != existingMovie)
         {
             throw new ConflictException("Movie");

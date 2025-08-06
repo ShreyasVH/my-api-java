@@ -130,15 +130,13 @@ public class MovieRepository
 		return movie;
 	}
 
-	public Movie get(String name, Long languageId, Date releaseDate)
+	public Movie get(String name, Long languageId, String releaseDate)
 	{
 		Movie movie = null;
 
 		try
 		{
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(releaseDate);
-			movie = this.db.find(Movie.class).where().eq("name", name).eq("languageId", languageId).eq("YEAR(releaseDate)", calendar.get(Calendar.YEAR)).findOne();
+			movie = this.db.find(Movie.class).where().eq("name", name).eq("languageId", languageId).eq("releaseDate", releaseDate).findOne();
 		}
 		catch(Exception ex)
 		{

@@ -110,6 +110,7 @@ public class ElasticServiceImpl implements ElasticService
         catch(Exception ex)
         {
             String sh = "sh";
+            ex.printStackTrace();
         }
         return isSuccess;
     }
