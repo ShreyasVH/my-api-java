@@ -100,6 +100,6 @@ public class SongsController extends BaseController
 
             MovieResponse movie = movieService.get(songRequest.getMovieId());
             return this.songsService.edit(id, songRequest, movie);
-        }, this.httpExecutionContext.current()).thenApplyAsync(response -> created(Json.toJson(response)), this.httpExecutionContext.current());
+        }, this.httpExecutionContext.current()).thenApplyAsync(response -> ok(Json.toJson(response)), this.httpExecutionContext.current());
     }
 }
