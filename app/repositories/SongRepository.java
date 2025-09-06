@@ -63,6 +63,19 @@ public class SongRepository
         }
     }
 
+    public void deleteSingerMaps(List<SongSingerMap> singerMaps)
+    {
+        try
+        {
+            this.db.deleteAll(singerMaps);
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+    }
+
     public List<SongComposerMap> saveComposerMaps(List<SongComposerMap> composerMaps)
     {
         try
@@ -77,12 +90,38 @@ public class SongRepository
         }
     }
 
+    public void deleteComposerMaps(List<SongComposerMap> composerMaps)
+    {
+        try
+        {
+            this.db.deleteAll(composerMaps);
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+    }
+
     public List<SongLyricistMap> saveLyricistMaps(List<SongLyricistMap> lyricistMaps)
     {
         try
         {
             this.db.saveAll(lyricistMaps);
             return lyricistMaps;
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+    }
+
+    public void deleteLyricistMaps(List<SongLyricistMap> lyricistMaps)
+    {
+        try
+        {
+            this.db.deleteAll(lyricistMaps);
         }
         catch(Exception ex)
         {
@@ -154,5 +193,21 @@ public class SongRepository
             throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
         }
         return dbList;
+    }
+
+    public Song get(Long id)
+    {
+        Song song = null;
+
+        try
+        {
+            song = this.db.find(Song.class).where().eq("id", id).findOne();
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return song;
     }
 }

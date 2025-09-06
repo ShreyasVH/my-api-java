@@ -84,4 +84,22 @@ public class SongsController extends BaseController
                 .supplyAsync(() -> songsService.get(id), this.httpExecutionContext.current())
                 .thenApplyAsync(song -> ok(Json.toJson(song)), this.httpExecutionContext.current());
     }
+
+    public CompletionStage<Result> editSong(Long id, Http.Request request)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            SongRequest songRequest;
+            try
+            {
+                songRequest = Utils.convertObject(request.body().asJson(), SongRequest.class);
+            }
+            catch(Exception ex)
+            {
+                throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+            }
+
+            MovieResponse movie = movieService.get(songRequest.getMovieId());
+            return this.songsService.edit(id, songRequest, movie);
+        }, this.httpExecutionContext.current()).thenApplyAsync(response -> created(Json.toJson(response)), this.httpExecutionContext.current());
+    }
 }

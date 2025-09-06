@@ -16,4 +16,6 @@ public interface SongService {
     FilterResponse<SongElasticDocument> filter(FilterRequest filterRequest);
 
     SongElasticDocument get(Long id);
+
+    Song edit(long id, SongRequest request, MovieResponse movieResponse);
 }
