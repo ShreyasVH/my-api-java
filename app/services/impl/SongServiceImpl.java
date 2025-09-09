@@ -224,4 +224,101 @@ public class SongServiceImpl implements SongService {
     {
         return this.elasticService.get(Constants.INDEX_NAME_SONGS, id, SongElasticDocument.class);
     }
+
+    @Override
+    public Song edit(long id, SongRequest request, MovieResponse movieResponse) {
+        Song song = this.songRepository.get(id);
+
+        Transaction transaction = Ebean.beginTransaction();
+        try
+        {
+            if(null == song)
+            {
+                throw new NotFoundException("Song");
+            }
+
+            boolean detailsChanged = false;
+            if(!request.getName().equals(song.getName()))
+            {
+                detailsChanged = true;
+                song.setName(request.getName());
+            }
+
+            if(!request.getSize().equals(song.getSize()))
+            {
+                detailsChanged = true;
+                song.setSize(request.getSize());
+            }
+
+            if(!request.getMovieId().equals(song.getMovieId()))
+            {
+                detailsChanged = true;
+                song.setMovieId(request.getMovieId());
+            }
+
+            if(detailsChanged)
+            {
+                song = this.songRepository.save(song);
+            }
+
+            List<Artist> singers = this.artistService.get(request.getSingerIds());
+            if(singers.size() != request.getSingerIds().size())
+            {
+                throw new NotFoundException("Singer");
+            }
+            Song finalSong = song;
+
+            List<SongSingerMap> existingSingers = this.songRepository.getSingerMaps(id);
+            List<Long> existingSingerIds = existingSingers.stream().map(SongSingerMap::getSingerId).collect(Collectors.toList());
+            List<SongSingerMap> singerMapsToDelete = existingSingers.stream().filter(ssm -> !request.getSingerIds().contains(ssm.getSingerId())).collect(Collectors.toList());
+            List<Long> singerIdsToAdd = request.getSingerIds().stream().filter(singerId -> !existingSingerIds.contains(singerId)).collect(Collectors.toList());
+            this.songRepository.saveSingerMaps(singerIdsToAdd.stream().map(singerId -> {
+                SongSingerMap singerMap = new SongSingerMap();
+                singerMap.setSongId(finalSong.getId());
+                singerMap.setSingerId(singerId);
+
+                return singerMap;
+            }).collect(Collectors.toList()));
+            this.songRepository.deleteSingerMaps(singerMapsToDelete);
+
+            List<SongComposerMap> existingComposers = this.songRepository.getComposerMaps(id);
+            List<Long> existingComposerIds = existingComposers.stream().map(SongComposerMap::getComposerId).collect(Collectors.toList());
+            List<SongComposerMap> composerMapsToDelete = existingComposers.stream().filter(scm -> !request.getComposerIds().contains(scm.getComposerId())).collect(Collectors.toList());
+            List<Long> composerIdsToAdd = request.getComposerIds().stream().filter(composerId -> !existingComposerIds.contains(composerId)).collect(Collectors.toList());
+            this.songRepository.saveComposerMaps(composerIdsToAdd.stream().map(composerId -> {
+                SongComposerMap composerMap = new SongComposerMap();
+                composerMap.setSongId(finalSong.getId());
+                composerMap.setComposerId(composerId);
+
+                return composerMap;
+            }).collect(Collectors.toList()));
+            this.songRepository.deleteComposerMaps(composerMapsToDelete);
+
+            List<SongLyricistMap> existingLyricists = this.songRepository.getLyricistMaps(id);
+            List<Long> existingLyricistIds = existingLyricists.stream().map(SongLyricistMap::getLyricistId).collect(Collectors.toList());
+            List<SongLyricistMap> lyricistMapsToDelete = existingLyricists.stream().filter(slm -> !request.getLyricistIds().contains(slm.getLyricistId())).collect(Collectors.toList());
+            List<Long> lyricistIdsToAdd = request.getLyricistIds().stream().filter(lyricistId -> !existingLyricistIds.contains(lyricistId)).collect(Collectors.toList());
+            this.songRepository.saveLyricistMaps(lyricistIdsToAdd.stream().map(lyricistIds -> {
+                SongLyricistMap lyricistMap = new SongLyricistMap();
+                lyricistMap.setSongId(finalSong.getId());
+                lyricistMap.setLyricistId(lyricistIds);
+
+                return lyricistMap;
+            }).collect(Collectors.toList()));
+            this.songRepository.deleteLyricistMaps(lyricistMapsToDelete);
+
+            transaction.commit();
+
+            SongElasticDocument songElasticDocument = this.songElasticDocument(song, movieResponse, request.getSingerIds(), request.getComposerIds(), request.getLyricistIds());
+            this.elasticService.index(Constants.INDEX_NAME_SONGS, song.getId(), songElasticDocument);
+
+            return song;
+        }
+        catch(Exception ex)
+        {
+            transaction.rollback();
+            transaction.end();
+            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+        }
+    }
 }

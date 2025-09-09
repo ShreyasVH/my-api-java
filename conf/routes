@@ -20,3 +20,4 @@ POST    /songs/song                                     controllers.SongsControl
 GET     /songs/dashboard                                controllers.SongsController.dashboard()
 POST    /songs/filter                                   controllers.SongsController.filter(request: Request)
 GET     /songs/:id                                      controllers.SongsController.get(id: Long)
+PUT     /songs/song/:id                                 controllers.SongsController.editSong(id: Long, request: Request)
