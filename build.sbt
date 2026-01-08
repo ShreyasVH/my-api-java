@@ -7,7 +7,7 @@ scalaVersion := "2.13.10"
 libraryDependencies ++= Seq(
   guice,
   jdbc,
-  "mysql" % "mysql-connector-java" % "8.0.17",
+  "com.mysql" % "mysql-connector-j" % "9.5.0",
   "org.projectlombok" % "lombok" % "1.18.8",
   "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.2.1"
 )
