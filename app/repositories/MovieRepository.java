@@ -1,62 +1,48 @@
 package repositories;
 
-import enums.ErrorCode;
-import exceptions.DBInteractionException;
-import io.ebean.Ebean;
-import io.ebean.EbeanServer;
-import io.ebean.SqlQuery;
-import io.ebean.SqlRow;
+import jakarta.persistence.EntityManager;
+import lombok.AllArgsConstructor;
 import models.Movie;
 import models.MovieActorMap;
 import models.MovieDirectorMap;
 import models.SongSingerMap;
-import org.elasticsearch.search.sort.SortOrder;
-import play.db.ebean.EbeanConfig;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.google.inject.Inject;
-import modules.DatabaseExecutionContext;
 
-import play.db.ebean.EbeanDynamicEvolutions;
-import requests.FilterRequest;
-import responses.FilterResponse;
+import play.db.jpa.JPAApi;
 import utils.Utils;
 
 public class MovieRepository
 {
-	private final EbeanServer db;
-	private final EbeanDynamicEvolutions ebeanDynamicEvolutions;
-	private final DatabaseExecutionContext databaseExecutionContext;
+	private final JPAApi jpaApi;
 
 	@Inject
-	public MovieRepository
-	(
-		EbeanConfig ebeanConfig,
-		EbeanDynamicEvolutions ebeanDynamicEvolutions,
-		DatabaseExecutionContext databaseExecutionContext
-	)
-	{
-		this.ebeanDynamicEvolutions = ebeanDynamicEvolutions;
-		this.db = Ebean.getServer(ebeanConfig.defaultServer());
-		this.databaseExecutionContext = databaseExecutionContext;
+	public MovieRepository(JPAApi jpaApi) {
+		this.jpaApi = jpaApi;
 	}
 
-	public List<SqlRow> getDashboard()
+	public List getDashboard()
 	{
-		List<SqlRow> dbList = new ArrayList<>();
-		try
+		List<Object[]> dbList = jpaApi.withTransaction(em -> {
+			return em.createNativeQuery("select l.id as language_id, l.name as language, count(*) as count, count(case when obtained = 1 then 1 end) as obtained_count, sum(case when m.obtained = 1 then m.size else 0 end) as size from movies m inner join languages l on m.language_id = l.id where m.active = 1 group by m.language_id")
+					.getResultList();
+		});
+		List<Map<String, Object>> response = new ArrayList<>();
+		for(Object[] row: dbList)
 		{
-			String sql = "select l.id as language_id, l.name as language, count(*) as count, count(case when obtained = 1 then 1 end) as obtained_count, sum(case when m.obtained = 1 then m.size else 0 end) as size from movies m inner join languages l on m.language_id = l.id where m.active = 1 group by m.language_id;";
-			SqlQuery query = db.createSqlQuery(sql);
-			dbList = query.findList();
+			Map<String, Object> responseItem = Map.of(
+					"language_id", row[0],
+					"language", row[1],
+					"count", row[2],
+					"obtained_count", row[3],
+					"size", row[4]);
+
+			response.add(responseItem);
 		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
-		return dbList;
+		return response;
 	}
 
 	public String getFieldNameWithTablePrefix(String field)
@@ -116,147 +102,95 @@ public class MovieRepository
 
 	public Movie get(Long id)
 	{
-		Movie movie = null;
-
-		try
-		{
-			movie = this.db.find(Movie.class).where().eq("id", id).eq("active", true).findOne();
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
-		return movie;
+		return jpaApi.withTransaction(em -> {
+			return em.createQuery("SELECT m FROM Movie m WHERE m.id = :id", Movie.class)
+					.setParameter("id", id)
+					.getSingleResultOrNull();
+		});
 	}
 
 	public Movie get(String name, Long languageId, String releaseDate)
 	{
-		Movie movie = null;
+		return jpaApi.withTransaction(em -> {
+			return em.createQuery("SELECT m FROM Movie m WHERE m.name = :name AND m.languageId = :languageId AND m.releaseDate = :releaseDate", Movie.class)
+				.setParameter("name", name)
+				.setParameter("languageId", languageId)
+				.setParameter("releaseDate", Utils.parseDateString(releaseDate))
+				.getSingleResultOrNull();
+		});
 
-		try
-		{
-			movie = this.db.find(Movie.class).where().eq("name", name).eq("languageId", languageId).eq("releaseDate", releaseDate).findOne();
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
-		return movie;
 	}
 
 	public List<MovieActorMap> getActorMaps(Long movieId)
 	{
-		List<MovieActorMap> actorMaps = new ArrayList<>();
-
-		try
-		{
-			actorMaps = this.db.find(MovieActorMap.class).where().eq("movieId", movieId).findList();
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
-		return actorMaps;
+		return jpaApi.withTransaction(em -> {
+			return em.createQuery("SELECT mam FROM MovieActorMap mam WHERE mam.movieId = :movieId", MovieActorMap.class)
+					.setParameter("movieId", movieId)
+					.getResultList();
+		});
 	}
 
 	public List<MovieActorMap> saveActorMaps(List<MovieActorMap> actorMaps)
 	{
-		try
-		{
-			this.db.saveAll(actorMaps);
-			return actorMaps;
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
+		return jpaApi.withTransaction(em -> {
+			return saveActorMaps(em, actorMaps);
+		});
 	}
+
+	public List<MovieActorMap> saveActorMaps(EntityManager em, List<MovieActorMap> actorMaps)
+	{
+		actorMaps.forEach(em::persist);
+		return actorMaps;
+	}
+
 
 	public void removeActorMaps(List<MovieActorMap> actorMaps)
 	{
-		try
-		{
-			this.db.deleteAll(actorMaps);
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
+		jpaApi.withTransaction(em -> {
+			actorMaps.forEach(em::remove);
+		});
 	}
 
 	public List<MovieDirectorMap> saveDirectorMaps(List<MovieDirectorMap> directorMaps)
 	{
-		try
-		{
-			this.db.saveAll(directorMaps);
-			return directorMaps;
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
+		return jpaApi.withTransaction(em -> {
+			return saveDirectorMaps(em, directorMaps);
+		});
+	}
+
+	public List<MovieDirectorMap> saveDirectorMaps(EntityManager em, List<MovieDirectorMap> directorMaps)
+	{
+		directorMaps.forEach(em::persist);
+
+		return directorMaps;
 	}
 
 	public void removeDirectorMaps(List<MovieDirectorMap> directorMaps)
 	{
-		try
-		{
-			this.db.deleteAll(directorMaps);
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
+		jpaApi.withTransaction(em -> {
+			directorMaps.forEach(em::remove);
+		});
 	}
 
 	public List<MovieDirectorMap> getDirectorMaps(Long movieId)
 	{
-		List<MovieDirectorMap> directorMaps = new ArrayList<>();
-
-		try
-		{
-			directorMaps = this.db.find(MovieDirectorMap.class).where().eq("movieId", movieId).findList();
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
-		return directorMaps;
+		return jpaApi.withTransaction(em -> {
+			return em.createQuery("SELECT mdm FROM MovieDirectorMap mdm WHERE mdm.movieId = :movieId", MovieDirectorMap.class)
+					.setParameter("movieId", movieId)
+					.getResultList();
+		});
 	}
 
 	public Movie save(Movie movie)
 	{
-		try
-		{
-			this.db.save(movie);
-			return movie;
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
+		return jpaApi.withTransaction(em -> {
+			return save(em, movie);
+		});
 	}
 
-	public List<SongSingerMap> saveSingerMaps(List<SongSingerMap> singerMaps)
+	public Movie save(EntityManager em, Movie movie)
 	{
-		try
-		{
-			this.db.saveAll(singerMaps);
-			return singerMaps;
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
+		em.persist(movie);
+		return movie;
 	}
 }

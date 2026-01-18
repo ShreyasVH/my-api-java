@@ -1,94 +1,57 @@
 package services.impl;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.Result;
+import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.google.inject.Inject;
 import enums.ErrorCode;
 import exceptions.InternalServerError;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.action.DocWriteResponse.Result;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import play.libs.Json;
 import responses.ElasticResponse;
 import responses.FilterResponse;
 import services.ElasticService;
 import utils.Utils;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ElasticServiceImpl implements ElasticService
 {
-    private static RestHighLevelClient client = null;
+    private final ElasticsearchClient client;
 
     @Inject
-    public ElasticServiceImpl()
-    {
-        this.initializeClient();
+    public ElasticServiceImpl() {
+        client = this.getClient();
     }
 
-    public void initializeClient()
-    {
-        try
-        {
-            RestClientBuilder builder = RestClient.builder(new HttpHost(System.getenv("ELASTIC_IP_HTTP"), Integer.parseInt(System.getenv("ELASTIC_PORT_HTTP")), System.getenv("ELASTIC_SCHEME")));
+    private ElasticsearchClient getClient() {
+        String serverUrl = "https://" + System.getenv("ELASTIC_IP_HTTP") + ":" + System.getenv("ELASTIC_PORT_HTTP");
+        String apiKey = System.getenv("ELASTIC_API_KEY");
 
-
-            if(1 == Integer.parseInt(System.getenv("ELASTIC_USE_CREDENTIALS")))
-            {
-                final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(System.getenv("ELASTIC_USERNAME"), System.getenv("ELASTIC_PASSWORD")));
-
-                builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
-            }
-
-            client = new RestHighLevelClient(builder);
-        }
-        catch(Exception ex)
-        {
-            String sh = "sh";
-        }
+        return ElasticsearchClient.of(b -> b
+                .host(serverUrl)
+                .apiKey(apiKey)
+        );
     }
 
     public <T> FilterResponse<T> search(SearchRequest request, Class<T> documentClass)
     {
         FilterResponse<T> elasticResponse = new FilterResponse<>();
 
-        try
-        {
-            SearchResponse response = client.search(request, RequestOptions.DEFAULT);
-            SearchHits hits = response.getHits();
-            elasticResponse.setTotalCount(hits.getTotalHits().value);
-            SearchHit[] searchHits = hits.getHits();
-            List<T> documents = new ArrayList<>();
-            for(SearchHit searchHit: searchHits)
-            {
-                Map<String, Object> document = searchHit.getSourceAsMap();
-                T formattedDocument = Utils.convertObject(document, documentClass);
-                documents.add(formattedDocument);
-            }
-
-            elasticResponse.setList(documents);
-        }
-        catch(Exception ex)
-        {
+        try {
+            SearchResponse<T> searchResponse = client.search(request, documentClass);
+            List<T> documentList = searchResponse.hits().hits().stream().map(Hit::source).collect(Collectors.toList());
+            long totalCount = searchResponse.hits().total().value();
+            elasticResponse.setTotalCount(totalCount);
+            elasticResponse.setList(documentList);
             String sh = "sh";
+        } catch (Exception ex) {
+            String sh = "sh";
+            ex.printStackTrace();
         }
 
         return elasticResponse;
@@ -96,38 +59,28 @@ public class ElasticServiceImpl implements ElasticService
 
     public boolean index(String index, Long id, Object document)
     {
-        boolean isSuccess = false;
-        IndexRequest indexRequest = new IndexRequest(index);
-        indexRequest.id(id.toString());
-        indexRequest.source(Json.toJson(document).toString(), XContentType.JSON);
-        try
-        {
-
-            IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
-            Result result = indexResponse.getResult();
-            isSuccess = ((Result.CREATED.getOp() == result.getOp()) || (Result.UPDATED.getOp() == result.getOp()));
+        try {
+            IndexResponse response = client.index(i -> i.index(index).id(String.valueOf(id)).document(document));
+            return response.result().equals(Result.Created);
+        } catch (IOException ex) {
+            return false;
         }
-        catch(Exception ex)
-        {
-            String sh = "sh";
-            ex.printStackTrace();
-        }
-        return isSuccess;
     }
 
     @Override
     public <T> T get(String index, Long id, Class<T> documentClass)
     {
-        try
-        {
-            GetRequest request = new GetRequest(index, id.toString());
-            GetResponse response = client.get(request, RequestOptions.DEFAULT);
+        GetRequest getRequest = new GetRequest
+                .Builder()
+                .index(index)
+                .id(String.valueOf(id))
+                .build();
 
-            return Utils.convertObject(response.getSource(), documentClass);
-        }
-        catch (IOException ex)
-        {
-            throw new InternalServerError(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getDescription());
+        try {
+            GetResponse<T> response = client.get(getRequest, documentClass);
+            return response.source();
+        } catch (IOException ex) {
+            return null;
         }
     }
 }

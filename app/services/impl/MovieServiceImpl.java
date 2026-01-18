@@ -1,20 +1,18 @@
 package services.impl;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOptions;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import enums.ErrorCode;
 import exceptions.BadRequestException;
 import exceptions.ConflictException;
 import exceptions.NotFoundException;
-import io.ebean.Ebean;
-import io.ebean.SqlRow;
 import com.google.inject.Inject;
-import io.ebean.Transaction;
 import models.*;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.util.StringUtils;
+import play.db.jpa.JPAApi;
 import repositories.MovieRepository;
 import requests.FilterRequest;
 import requests.MovieRequest;
@@ -25,15 +23,18 @@ import services.*;
 import utils.Utils;
 import constants.Constants;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by shreyas.hande on 12/10/17.
  */
 public class MovieServiceImpl implements MovieService {
 
+    private final JPAApi jpaApi;
     private final MovieRepository movieRepository;
 
     private final LanguageService languageService;
@@ -44,6 +45,7 @@ public class MovieServiceImpl implements MovieService {
     @Inject
     public MovieServiceImpl
     (
+        JPAApi jpaApi,
         MovieRepository movieRepository,
 
         LanguageService languageService,
@@ -52,6 +54,7 @@ public class MovieServiceImpl implements MovieService {
         ElasticService elasticService
     )
     {
+        this.jpaApi = jpaApi;
         this.movieRepository = movieRepository;
 
         this.languageService = languageService;
@@ -61,7 +64,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<SqlRow> getDashboard()
+    public List getDashboard()
     {
         return movieRepository.getDashboard();
     }
@@ -76,13 +79,7 @@ public class MovieServiceImpl implements MovieService {
 
     private SearchRequest getElasticRequest(FilterRequest filterRequest)
     {
-        SearchRequest request = new SearchRequest(Constants.INDEX_NAME_MOVIES);
-
-        SearchSourceBuilder builder = new SearchSourceBuilder();
-        builder.from(filterRequest.getOffset());
-        builder.size(filterRequest.getCount());
-
-        BoolQueryBuilder query = QueryBuilders.boolQuery();
+        BoolQuery.Builder query = QueryBuilders.bool();
 
         for(Map.Entry<String, List<String>> entry: filterRequest.getAndFilters().entrySet())
         {
@@ -90,7 +87,15 @@ public class MovieServiceImpl implements MovieService {
             List<String> valueList = entry.getValue();
             if (!valueList.isEmpty())
             {
-                query.must(QueryBuilders.termsQuery(key, valueList));
+                query.must(b -> b.terms(TermsQuery.of(t -> t
+                        .field(key)
+                        .terms(TermsQueryField.of(m -> m
+                                        .value(
+                                                valueList.stream().map(FieldValue::of).collect(Collectors.toList())
+                                        )
+                                )
+                        )
+                )));
             }
         }
 
@@ -98,28 +103,33 @@ public class MovieServiceImpl implements MovieService {
         {
             String key = entry.getKey();
             Boolean value = entry.getValue();
-            query.must(QueryBuilders.termQuery(key, value));
+            query.must(b -> b.term(TermQuery.of(t -> t.field(key).value(value))));
         }
 
-        builder.query(query);
-
         Map<String, SortOrder> sortMap = filterRequest.getSortMap();
+        List<SortOptions> sortOptions = new ArrayList<>();
         for(Map.Entry<String, SortOrder> sortField: sortMap.entrySet())
         {
             String key = sortField.getKey();
             SortOrder order = sortField.getValue();
 
             String sortKey = (key + ".sort");
-            builder.sort(sortKey, order);
+            sortOptions.add(SortOptions.of(s -> s.field(f -> f.field(sortKey).order(order))));
         }
 
         if(!sortMap.containsKey("id"))
         {
-            builder.sort("id.sort", SortOrder.ASC);
+            sortOptions.add(SortOptions.of(s -> s.field(f -> f.field("id.sort").order(SortOrder.Asc))));
         }
 
-        request.source(builder);
-        return request;
+        return SearchRequest.of(b -> b
+                .index(Constants.INDEX_NAME_MOVIES)
+                .query(query.build()._toQuery()
+                )
+                .from(filterRequest.getOffset())
+                .size(filterRequest.getCount())
+                .sort(sortOptions)
+        );
     }
 
     private MovieElasticDocument movieElasticDocument(Movie movie, List<Long> actorIds, List<Long> directorIds)
@@ -130,25 +140,36 @@ public class MovieServiceImpl implements MovieService {
             movieElasticDocument.setFormat(this.formatService.get(movie.getFormatId()));
         }
 
-        List<Artist> actors = new ArrayList<>();
+
         if(null == actorIds)
         {
             actorIds = this.movieRepository.getActorMaps(movie.getId()).stream().map(MovieActorMap::getActorId).collect(Collectors.toList());
         }
-        Map<Long, Artist> actorMap = this.artistService.get(actorIds).stream().collect(Collectors.toMap(artist -> artist.getId(), artist -> artist));
-        for(Long actorId: actorIds) {
-            if(actorMap.containsKey(actorId)) {
-                actors.add(actorMap.get(actorId));
-            }
-        }
-
-        movieElasticDocument.setActors(actors);
 
         if(null == directorIds)
         {
             directorIds = this.movieRepository.getDirectorMaps(movie.getId()).stream().map(MovieDirectorMap::getDirectorId).collect(Collectors.toList());
         }
-        movieElasticDocument.setDirectors(this.artistService.get(directorIds));
+
+        Map<Long, Artist> artistMap = this.artistService.get(Stream.concat(actorIds.stream(), directorIds.stream()).toList())
+                .stream().collect(Collectors.toMap(artist -> artist.getId(), artist -> artist));
+
+        List<Artist> actors = new ArrayList<>();
+        for(Long actorId: actorIds) {
+            if(artistMap.containsKey(actorId)) {
+                actors.add(artistMap.get(actorId));
+            }
+        }
+
+        movieElasticDocument.setActors(actors);
+
+        List<Artist> directors = new ArrayList<>();
+        for(Long directorId: directorIds) {
+            if(artistMap.containsKey(directorId)) {
+                directors.add(artistMap.get(directorId));
+            }
+        }
+        movieElasticDocument.setDirectors(directors);
 
         return movieElasticDocument;
     }
@@ -367,85 +388,73 @@ public class MovieServiceImpl implements MovieService {
         movie.setActive(true);
         movie.setObtained(false);
 
-        Transaction transaction = Ebean.beginTransaction();
-        try
+        Language language = this.languageService.get(request.getLanguageId());
+        if(null == language)
         {
-            Language language = this.languageService.get(request.getLanguageId());
-            if(null == language)
-            {
-                throw new NotFoundException("Language");
-            }
+            throw new NotFoundException("Language");
+        }
 
-            movie = this.movieRepository.save(movie);
+        List<Artist> actors = this.artistService.get(request.getActors());
+        if(actors.size() != request.getActors().size())
+        {
+            throw new NotFoundException("Actor");
+        }
 
-            List<Artist> actors = this.artistService.get(request.getActors());
-            if(actors.size() != request.getActors().size())
-            {
-                throw new NotFoundException("Actor");
-            }
-            Movie finalMovie = movie;
-            this.movieRepository.saveActorMaps(request.getActors().stream().map(actorId -> {
+        List<Artist> directors = this.artistService.get(request.getDirectors());
+        if(directors.size() != request.getDirectors().size())
+        {
+            throw new NotFoundException("Director");
+        }
+
+        jpaApi.withTransaction(em -> {
+            this.movieRepository.save(em, movie);
+            this.movieRepository.saveActorMaps(em, request.getActors().stream().map(actorId -> {
                 MovieActorMap actorMap = new MovieActorMap();
-                actorMap.setMovieId(finalMovie.getId());
+                actorMap.setMovieId(movie.getId());
                 actorMap.setActorId(actorId);
 
                 return actorMap;
             }).collect(Collectors.toList()));
 
-            List<Artist> directors = this.artistService.get(request.getDirectors());
-            if(directors.size() != request.getDirectors().size())
-            {
-                throw new NotFoundException("Director");
-            }
-            this.movieRepository.saveDirectorMaps(request.getDirectors().stream().map(directorId -> {
+
+            this.movieRepository.saveDirectorMaps(em, request.getDirectors().stream().map(directorId -> {
                 MovieDirectorMap directorMap = new MovieDirectorMap();
-                directorMap.setMovieId(finalMovie.getId());
+                directorMap.setMovieId(movie.getId());
                 directorMap.setDirectorId(directorId);
 
                 return directorMap;
             }).collect(Collectors.toList()));
+        });
 
-            transaction.commit();
-
-            MovieElasticDocument movieElasticDocument = this.movieElasticDocument(movie, request.getActors(), request.getDirectors());
-            this.elasticService.index(Constants.INDEX_NAME_MOVIES, movie.getId(), movieElasticDocument);
-            return new MovieResponse(movieElasticDocument);
-        }
-        catch(Exception ex)
-        {
-            transaction.rollback();
-            transaction.end();
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
-        }
+        MovieElasticDocument movieElasticDocument = this.movieElasticDocument(movie, request.getActors(), request.getDirectors());
+        this.elasticService.index(Constants.INDEX_NAME_MOVIES, movie.getId(), movieElasticDocument);
+        return new MovieResponse(movieElasticDocument);
     }
 
     @Override
     public List<MovieResponse> getMoviesByKeyword(String keyword)
     {
-        SearchRequest request = new SearchRequest(Constants.INDEX_NAME_MOVIES);
-
-        SearchSourceBuilder builder = new SearchSourceBuilder();
+        BoolQuery.Builder query = QueryBuilders.bool();
 
         keyword = URLDecoder.decode(keyword);
         String[] words = keyword.split(" ");
-        BoolQueryBuilder finalQuery = QueryBuilders.boolQuery();
         for(String word : words)
         {
-            word = word.toLowerCase();
             if(word.length() >= 2)
             {
-                finalQuery.must(QueryBuilders.termQuery("name", word));
+                query.must(b -> b.term(TermQuery.of(t -> t.field("name").value(word.toLowerCase()))));
             }
         }
-        finalQuery.must(QueryBuilders.termQuery("active", true));
 
-        builder.query(finalQuery);
+        SearchRequest searchRequest = SearchRequest.of(b -> b
+                .index(Constants.INDEX_NAME_MOVIES)
+                .query(query.build()._toQuery()
+                )
+                .sort(s -> s.field(f -> f.field("name").order(SortOrder.Asc)))
+                .sort(s -> s.field(f -> f.field("id").order(SortOrder.Asc)))
+        );
 
-        builder.sort("name" + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
-        builder.sort("id" + Constants.SORT_KEY_ELASTIC, SortOrder.ASC);
-
-        request.source(builder);
-        FilterResponse<MovieElasticDocument> response = elasticService.search(request, MovieElasticDocument.class);
+        FilterResponse<MovieElasticDocument> response = elasticService.search(searchRequest, MovieElasticDocument.class);
         return response.getList().stream().map(MovieResponse::new).collect(Collectors.toList());
     }
 

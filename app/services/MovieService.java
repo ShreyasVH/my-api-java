@@ -1,6 +1,5 @@
 package services;
 
-import io.ebean.SqlRow;
 import models.Movie;
 import requests.FilterRequest;
 import requests.MovieRequest;
@@ -8,6 +7,7 @@ import responses.FilterResponse;
 import responses.MovieElasticDocument;
 import responses.MovieResponse;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface MovieService
 {
-    List<SqlRow> getDashboard();
+    List getDashboard();
 
     FilterResponse<MovieElasticDocument> filter(FilterRequest filterRequest);
 

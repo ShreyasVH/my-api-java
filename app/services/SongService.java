@@ -1,6 +1,5 @@
 package services;
 
-import io.ebean.SqlRow;
 import models.Song;
 import requests.FilterRequest;
 import requests.SongRequest;
@@ -11,7 +10,7 @@ import java.util.List;
 public interface SongService {
     Song add(SongRequest request, MovieResponse movieResponse);
 
-    List<SqlRow> dashboard();
+    List dashboard();
 
     FilterResponse<SongElasticDocument> filter(FilterRequest filterRequest);
 
