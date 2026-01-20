@@ -190,6 +190,19 @@ public class MovieRepository
 
 	public Movie save(EntityManager em, Movie movie)
 	{
+		em.persist(movie);
+		return movie;
+	}
+
+	public Movie update(Movie movie)
+	{
+		return jpaApi.withTransaction(em -> {
+			return update(em, movie);
+		});
+	}
+
+	public Movie update(EntityManager em, Movie movie)
+	{
 		em.merge(movie);
 		return movie;
 	}

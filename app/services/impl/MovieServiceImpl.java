@@ -366,7 +366,7 @@ public class MovieServiceImpl implements MovieService {
         MovieElasticDocument movieElasticDocument = this.movieElasticDocument(existingMovie, null, null);
         if(isUpdateRequired)
         {
-            existingMovie = this.movieRepository.save(existingMovie);
+            existingMovie = this.movieRepository.update(existingMovie);
             this.elasticService.index(Constants.INDEX_NAME_MOVIES, id, movieElasticDocument);
         }
 
