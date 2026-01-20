@@ -190,7 +190,7 @@ public class MovieRepository
 
 	public Movie save(EntityManager em, Movie movie)
 	{
-		em.persist(movie);
+		em.merge(movie);
 		return movie;
 	}
 }
