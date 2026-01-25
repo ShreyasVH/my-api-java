@@ -1,19 +1,14 @@
 package models;
 
 import enums.Status;
-import io.ebean.SqlRow;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import io.ebean.Model;
 import requests.MovieRequest;
 import utils.Utils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -25,10 +20,11 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "movies")
-public class Movie extends Model
+public class Movie
 {
 	@Id
 	@Column
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column
@@ -67,21 +63,21 @@ public class Movie extends Model
 	@Column
 	private String imageUrl;
 
-	public Movie(SqlRow movie)
-	{
-		this.id = movie.getLong("id");
-		this.name = movie.getString("name");
-		this.formatId = movie.getLong("format_id");
-		this.languageId = movie.getLong("language_id");
-		this.size = movie.getLong("size");
-		this.quality = movie.getString("quality");
-		this.subtitles = movie.getBoolean("subtitles");
-		this.seenInTheatre = movie.getBoolean("seen_in_theatre");
-		this.basename = movie.getString("basename");
-		this.active = movie.getBoolean("active");
-		this.imageUrl = movie.getString("image_url");
-		this.obtained = movie.getBoolean("obtained");
-	}
+//	public Movie(SqlRow movie)
+//	{
+//		this.id = movie.getLong("id");
+//		this.name = movie.getString("name");
+//		this.formatId = movie.getLong("format_id");
+//		this.languageId = movie.getLong("language_id");
+//		this.size = movie.getLong("size");
+//		this.quality = movie.getString("quality");
+//		this.subtitles = movie.getBoolean("subtitles");
+//		this.seenInTheatre = movie.getBoolean("seen_in_theatre");
+//		this.basename = movie.getString("basename");
+//		this.active = movie.getBoolean("active");
+//		this.imageUrl = movie.getString("image_url");
+//		this.obtained = movie.getBoolean("obtained");
+//	}
 
 	public Movie(MovieRequest request)
 	{

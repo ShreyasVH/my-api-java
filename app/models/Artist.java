@@ -1,17 +1,12 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import io.ebean.Model;
 import requests.ArtistRequest;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * Created by shreyasvh on 10/22/17.
@@ -21,10 +16,11 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(value = { "_ebean_intercept" }, ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "artists")
-public class Artist extends Model {
+public class Artist {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

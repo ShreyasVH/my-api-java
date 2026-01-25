@@ -1,8 +1,10 @@
 package services;
 
-import org.elasticsearch.action.search.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import responses.ElasticResponse;
 import responses.FilterResponse;
+
+import java.io.IOException;
 
 public interface ElasticService
 {

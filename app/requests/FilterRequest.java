@@ -1,8 +1,8 @@
 package requests;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import lombok.Getter;
 import lombok.Setter;
-import org.elasticsearch.search.sort.SortOrder;
 
 import java.util.HashMap;
 import java.util.List;
