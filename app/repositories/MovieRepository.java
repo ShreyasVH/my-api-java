@@ -147,7 +147,12 @@ public class MovieRepository
 	public void removeActorMaps(List<MovieActorMap> actorMaps)
 	{
 		jpaApi.withTransaction(em -> {
-			actorMaps.forEach(em::remove);
+			actorMaps.forEach(mam -> em.createQuery(
+					"DELETE FROM MovieActorMap mam WHERE mam.movieId = :movieId AND mam.actorId = :actorId"
+			)
+				.setParameter("movieId", mam.getMovieId())
+				.setParameter("actorId", mam.getActorId())
+				.executeUpdate());
 		});
 	}
 
@@ -168,7 +173,12 @@ public class MovieRepository
 	public void removeDirectorMaps(List<MovieDirectorMap> directorMaps)
 	{
 		jpaApi.withTransaction(em -> {
-			directorMaps.forEach(em::remove);
+			directorMaps.forEach(mdm -> em.createQuery(
+					"DELETE FROM MovieDirectorMap mdm WHERE mdm.movieId = :movieId AND mdm.directorId = :directorId"
+			)
+				.setParameter("movieId", mdm.getMovieId())
+				.setParameter("directorId", mdm.getDirectorId())
+				.executeUpdate());
 		});
 	}
 
