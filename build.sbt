@@ -2,17 +2,17 @@ name := "myapi"
 
 version := "1.0.0"
 
-scalaVersion := "2.13.18"
+scalaVersion := "3.8.1"
 
 libraryDependencies ++= Seq(
   guice,
   evolutions,
   jdbc,
   javaJpa,
-  "com.mysql" % "mysql-connector-j" % "9.5.0",
+  "com.mysql" % "mysql-connector-j" % "9.6.0",
   "org.projectlombok" % "lombok" % "1.18.42" % "provided",
-  "org.hibernate.orm" % "hibernate-core" % "7.2.0.Final",
-  "co.elastic.clients" % "elasticsearch-java" % "9.2.3"
+  "org.hibernate.orm" % "hibernate-core" % "7.2.2.Final",
+  "co.elastic.clients" % "elasticsearch-java" % "9.2.4"
 )
 
 val jacksonV = "2.14.3"
