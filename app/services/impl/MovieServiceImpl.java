@@ -445,13 +445,14 @@ public class MovieServiceImpl implements MovieService {
                 query.must(b -> b.term(TermQuery.of(t -> t.field("name").value(word.toLowerCase()))));
             }
         }
+        query.must(b -> b.term(TermQuery.of(t -> t.field("active").value(true))));
 
         SearchRequest searchRequest = SearchRequest.of(b -> b
                 .index(Constants.INDEX_NAME_MOVIES)
                 .query(query.build()._toQuery()
                 )
-                .sort(s -> s.field(f -> f.field("name").order(SortOrder.Asc)))
-                .sort(s -> s.field(f -> f.field("id").order(SortOrder.Asc)))
+                .sort(s -> s.field(f -> f.field("name" + Constants.SORT_KEY_ELASTIC).order(SortOrder.Asc)))
+                .sort(s -> s.field(f -> f.field("id" + Constants.SORT_KEY_ELASTIC).order(SortOrder.Asc)))
         );
 
         FilterResponse<MovieElasticDocument> response = elasticService.search(searchRequest, MovieElasticDocument.class);
