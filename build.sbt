@@ -10,7 +10,7 @@ libraryDependencies ++= Seq(
   jdbc,
   javaJpa,
   "com.mysql" % "mysql-connector-j" % "9.6.0",
-  "org.projectlombok" % "lombok" % "1.18.42" % "provided",
+  "org.projectlombok" % "lombok" % "1.18.44" % "provided",
   "org.hibernate.orm" % "hibernate-core" % "7.2.7.Final",
   "co.elastic.clients" % "elasticsearch-java" % "9.3.2"
 )
