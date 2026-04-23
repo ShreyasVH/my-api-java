@@ -43,6 +43,7 @@ public class ErrorHandler implements HttpErrorHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("code", errorCode);
         response.put("description", content);
+        exception.printStackTrace();
 
         return CompletableFuture.completedFuture(Results.status(httpsStatusCode, Json.toJson(response)));
     }

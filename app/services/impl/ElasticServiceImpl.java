@@ -63,6 +63,7 @@ public class ElasticServiceImpl implements ElasticService
             IndexResponse response = client.index(i -> i.index(index).id(String.valueOf(id)).document(document));
             return response.result().equals(Result.Created);
         } catch (IOException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
