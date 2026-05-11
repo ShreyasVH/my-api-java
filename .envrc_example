@@ -1,7 +1,7 @@
 # sbt 1.12.2 path
 export PATH=
 
-# java 11.0.19 path
+# java 26.0.1 path
 export PATH=
 
 export MYSQL_IP=
