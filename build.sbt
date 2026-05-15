@@ -11,8 +11,8 @@ libraryDependencies ++= Seq(
   javaJpa,
   "com.mysql" % "mysql-connector-j" % "9.7.0",
   "org.projectlombok" % "lombok" % "1.18.46" % "provided",
-  "org.hibernate.orm" % "hibernate-core" % "7.2.14.Final",
-  "co.elastic.clients" % "elasticsearch-java" % "9.3.4"
+  "org.hibernate.orm" % "hibernate-core" % "7.3.4.Final",
+  "co.elastic.clients" % "elasticsearch-java" % "9.4.0"
 )
 
 val jacksonV = "2.14.3"
