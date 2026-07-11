@@ -26,6 +26,19 @@ libraryDependencies ++= Seq(
   "org.apache.pekko" %% "pekko-serialization-jackson" % pekkoVersion
 )
 
+val jacksonVersion = "2.21.2"
+val jacksonAnnotationsVersion = "2.21"
+
+dependencyOverrides ++= Seq(
+  "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonAnnotationsVersion,
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % jacksonVersion,
+  "com.fasterxml.jackson.module" % "jackson-module-parameter-names" % jacksonVersion
+)
+
 Compile / javacOptions ++= Seq("-proc:full")
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava)
