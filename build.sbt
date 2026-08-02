@@ -9,10 +9,10 @@ libraryDependencies ++= Seq(
   evolutions,
   jdbc,
   javaJpa,
-  "com.mysql" % "mysql-connector-j" % "9.7.0",
+  "com.mysql" % "mysql-connector-j" % "26.7.0",
   "org.projectlombok" % "lombok" % "1.18.46" % "provided",
   "org.hibernate.orm" % "hibernate-core" % "7.4.5.Final",
-  "co.elastic.clients" % "elasticsearch-java" % "9.4.4"
+  "co.elastic.clients" % "elasticsearch-java" % "9.4.5"
 )
 
 val pekkoVersion = "1.6.0"
