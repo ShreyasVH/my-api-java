@@ -1,4 +1,4 @@
-# sbt 2.0.8 path
+# sbt 1.13.0 path
 export PATH=
 
 # java 26.0.2 path
