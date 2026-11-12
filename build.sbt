@@ -2,7 +2,7 @@ name := "myapi"
 
 version := "1.0.0"
 
-scalaVersion := "3.9.0"
+scalaVersion := "3.10.1"
 
 libraryDependencies ++= Seq(
   guice,
